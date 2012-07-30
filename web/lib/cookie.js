@@ -5,6 +5,7 @@
 
 var COL_NUMBER = 22;
 var COOKIE_NAME="stock";
+var defaultValue=[];
 var typeArr =  [];
 typeArr[0] = "palette30";
 typeArr[1] = "palette60";
@@ -26,8 +27,8 @@ function loadDefaultValue(type){
                     defaultValue[k++] = 0;          //transy
                     defaultValue[k++] = 0;          //rotation
                     defaultValue[k++] = "rectangle" //forme
-                    defaultValue[k++] = 20          //largeur
-                    defaultValue[k++] = 10          //hauteur
+                    defaultValue[k++] = 160          //largeur
+                    defaultValue[k++] = 80          //hauteur
                     defaultValue[k++] = 0           //arg
                     defaultValue[k++] = 0           //arg  
                     defaultValue[k++] = "P30"       //texte
@@ -176,6 +177,23 @@ function loadDefaultValue(type){
                         arrow = getCookie($.trim(name[0]));
                         var mySplitResult = arrow.split(",");
                         insertRow(mySplitResult,"myTable",undefined);
+                    }
+                }
+            }
+            function loadArrayFromCookie(){
+                
+                var cookieList = [];
+                var i = 0;
+                var cookieList = document.cookie.split(';');
+                
+                for(i=0;i<cookieList.length;i++){
+                    var name = cookieList[i].split("=");
+                    if(name[0].match(COOKIE_NAME)){
+                        var index = arrec.length;
+                        var arrow = [] ;
+                        arrow = getCookie($.trim(name[0]));
+                        var mySplitResult = arrow.split(",");
+                        arrec[index]=mySplitResult;
                     }
                 }
             }

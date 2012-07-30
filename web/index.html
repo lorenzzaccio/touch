@@ -30,7 +30,7 @@
 
         <script type="text/javascript">
             //global vars
-            
+            var arrec = [];
             var g;
             var selectedItem;
             var menuSvg;
@@ -47,15 +47,22 @@
                 initEventHandler();
                 myGraph = new graphic(g,globalVar);
                 initialize();
-                var group = drawRect("g_pal1","orange","purple",20,200,120,70,0,0);
-                drawRect("rect2","green","orange",200,200,70,70,0,0);
-                drawRect("rect3","red","orange",500,500,70,70,0,0);
+                //create a table named "myTable" with a header row (tableHeader) and attach it to the div "footer"
+                //var tableHeader = loadHeader();
+                //createHeader("footer","myTable",tableHeader);
+                //read cookies and put them in myTable
+                //readCookie();
+                loadArrayFromCookie();
+                drawcaps();
+                //var group = drawRect("g_pal1","orange","purple",20,200,120,70,0,0);
+                //drawRect("rect2","green","orange",200,200,70,70,0,0);
+                //drawRect("rect3","red","orange",500,500,70,70,0,0);
             }
             
             
             function drawcaps() {
-                var tableId = "myTable";
-                myGraph.updateViewBox();
+                //var tableId = "myTable";
+                //myGraph.updateViewBox();
                 var displayList = []; 
                 
                 $('#svgbasics').svg('get').clear();
@@ -63,13 +70,14 @@
                 
                 var arrow = [];
                 var rowLength = 0;
-                if(document.getElementById(tableId)!= null)
-                    rowLength = document.getElementById(tableId).rows.length;    
-        
+                //if(document.getElementById(tableId)!= null)
+                //    rowLength = document.getElementById(tableId).rows.length;    
+                rowLength = arrec.length;
                 if(rowLength>0){
                     var k =0;
                     for(var j = 0 ; j< rowLength;j++){
-                        arrow= readRow(tableId,j);
+                        //arrow= readRow(tableId,j);
+                        arrow = arrec[j];
                         if(arrow[COL_NUMBER-2]!=null){
                             displayList[k] = j;
                             k++;
@@ -77,19 +85,40 @@
                     }
                     for(var j = 0 ; j<= 100;j++){
                         for(var l = 0 ; l< k;l++){//on demarre à 1 car 0 c'est le header'
-                            arrow= readRow(tableId,displayList[l]);
+                            //arrow= readRow(tableId,displayList[l]);
+                            arrow = arrec[displayList[l]];
                             if(arrow[COL_NUMBER-1] == j){
+                                if(activeView == "ROOM")
+                                    filter="room";
+                                if(activeView == "CARTON")
+                                    filter=selectedPalette;
+                                //alert(arrow[FORME_HEADER]+" - "+arrow[VIEW_HEADER]);
                                 
-                                
-                                
-                                
-                               
+                                if((arrow[FORME_HEADER] == "rectangle")&&(arrow[VIEW_HEADER]==filter)){
+                                    var id = arrow[ID_HEADER];//posx
+                                    var x = arrow[X_HEADER];//posx
+                                    var y = arrow[Y_HEADER];//posy
+                                    var height = arrow[HEIGHT_HEADER];//posy
+                                    var width = arrow[WIDTH_HEADER];//posy
+                                    var transx = arrow[TRANSX_HEADER];//transx
+                                    var transy = arrow[TRANSY_HEADER];//transy
+                                    var texte = arrow[TEXTE_HEADER];//texte
+                                    var fillColor = arrow[FILLCOLOR_HEADER];//color
+                                    var strokeColor = arrow[STROKECOLOR_HEADER];//stroke color
+                                    var quantite = arrow[QUANTITE_HEADER];//quantity
+                                    
+                                    var group = drawRect(arrow);
+                                    drawText(group,id,strokeColor,texte,0,x-(-5),y-(-height));
+                                    drawText(group,id,strokeColor,quantite,1,x-(-5),y-(-height));
+                                    
+                                    }
                           }
                         }
                       }
                     
                     for(var j = 0 ; j< rowLength;j++){
-                        arrow= readRow(tableId,j);
+                        //arrow= readRow(tableId,j);
+                        arrow = arrec[j];
                     }
                 }else{
                     //alert("tbl is null");
@@ -108,6 +137,7 @@
             </div>
             
             <div id="left_column"></div>
+            <INPUT TYPE=button id ="refreshBtn" SIZE=40 VALUE="refresh" onClick="addPalette()">
             <div id="svgrow">
                 <div id="svgbasics"></div>
                 <div id="svgmenu" >

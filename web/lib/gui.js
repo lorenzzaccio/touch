@@ -153,18 +153,18 @@ function initialize() {
                         //bouton Créer Palette$
                         myMapApp.buttons["vueCartonBtn"]= new button("vueCartonBtn","mainMenu",vueCartonBtnPressed,"rect","vue carton",undefined,orix+200,oriy-150,200,50,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,1);
                         myMapApp.buttons["vuePaletteBtn"]= new button("vueRoomBtn","mainMenu",vuePaletteBtnPressed,"rect","vue palette",undefined,orix+400,oriy-150,200,50,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,1);
-                        
-                        myMapApp.buttons["addProductBtn"]= new button("addProductBtn","mainMenu",addProductBtn,"rect","Ajouter Produit",undefined,orix+100,oriy+0,300,50,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,1);
                         */
+                        myMapApp.buttons["addProductBtn"]= new button("addProductBtn","mainMenu",addProductBtn,"rect","Ajouter Produit",undefined,orix+100,oriy+0,300,50,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,1);
+                        
                        var t=1400;
-                        lblx = new label("lblx","mainBackground","",25,orix +10,oriy - (-930)-t,800,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"
-                        lbly = new label("lbly","mainBackground","",25,orix +10,oriy - (-960)-t,800,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"
-                        lblState = new label("lblState","mainBackground","",50,orix +10,oriy - (-990)-t,850,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"
-                        lblItemSelected = new label("lblItemSelected","mainBackground","",25,orix +10,oriy - (-1020)-t,850,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"
-                        lblDrag = new label("lblDrag","mainBackground","",25,orix +10,oriy - (-1050)-t,850,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"
-                        lbltransx = new label("lbltransx","mainBackground","",25,orix +10,oriy - (-1080)-t,800,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"
-                        lbltransy = new label("lbltransy","mainBackground","",25,orix +10,oriy - (-1110)-t,800,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"
-                        lblIndex = new label("lblIndex","mainBackground","",25,orix +10,oriy - (-1140)-t,850,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"
+                        lblx = new label("lblx","mainMenu","",25,orix +100,oriy +100,800,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"
+                        lbly = new label("lbly","mainMenu","",25,orix +100,oriy +130,800,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"
+                        lblState = new label("lblState","mainMenu","",50,orix +100,oriy +160,850,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"
+                        lblItemSelected = new label("lblItemSelected","mainMenu","",25,orix +100,oriy +190,850,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"
+                        lblDrag = new label("lblDrag","mainMenu","",25,orix +100,oriy +210,850,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"
+                        lbltransx = new label("lbltransx","mainMenu","",25,orix +100,oriy +240,800,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"
+                        lbltransy = new label("lbltransy","mainMenu","",25,orix +100,oriy +270,800,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"
+                        lblIndex = new label("lblIndex","mainMenu","",25,orix +100,oriy +300,850,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"
                            
                         /*
                         lblTexte = new label("lbl"+TEXTE_HEADER,"mainMenu",tableHeader[TEXTE_HEADER],25,orix +200,oriy - (-30-60*1),250,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"

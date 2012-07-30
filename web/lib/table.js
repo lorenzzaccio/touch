@@ -30,123 +30,6 @@
                 return tableHeader;
             }
             
-            function loadHeaderDev(){
-                tableHeader[0] = " ";
-                tableHeader[1] = "Type";
-                tableHeader[2] = "position";
-                tableHeader[3] = "Conicité";
-                tableHeader[4] = "Couleur";
-                tableHeader[5] = "Opacité";
-                tableHeader[6] = "hauteur";
-                tableHeader[7] = "diamètre de tête";
-                tableHeader[8] = "déboitage";
-                tableHeader[9] = "ouverture";	
-                tableHeader[10] = "typeImp";
-                tableHeader[11] = "linkFile";
-                tableHeader[12] = "ordre";
-                return tableHeader;
-            }
-            
-            function loadHeaderVue(){
-                tableHeader[0] = " ";
-                tableHeader[1] = "Type";
-                tableHeader[2] = "PositionX";
-                tableHeader[3] = "PositionY";
-                tableHeader[4] = "Couleur";
-                tableHeader[5] = "Opacité";
-                tableHeader[6] = "hauteur";
-                tableHeader[7] = "diamètre de tête";
-                tableHeader[8] = "déboitage";
-                tableHeader[9] = "ouverture";	
-                tableHeader[10] = "typeImp";
-                tableHeader[11] = "linkFile";
-                tableHeader[12] = "ordre";
-                return tableHeader;
-            }
-            
-            function loadHeaderTexte(){
-                tableHeader[0] = " ";
-                tableHeader[1] = "Type";
-                tableHeader[2] = "Texte";
-                tableHeader[3] = "Police";
-                tableHeader[4] = "Couleur";
-                tableHeader[5] = "Opacité";
-                tableHeader[6] = "Taille";
-                tableHeader[7] = "Hauteur du bord";//avant, arriere,côté ...
-                tableHeader[8] = "Vue";
-                tableHeader[9] = "Epaisseur du trait";	
-                tableHeader[10] = "typeImp";
-                tableHeader[11] = "linkFile";
-                tableHeader[12] = "ordre";
-                return tableHeader;
-            }
-            
-             function loadHeaderLiseret(){
-                tableHeader[0] = " ";
-                tableHeader[1] = "Type";
-                tableHeader[2] = "";
-                tableHeader[3] = "";
-                tableHeader[4] = "Couleur";
-                tableHeader[5] = "Opacité";
-                tableHeader[6] = "";
-                tableHeader[7] = "Hauteur du bord";//avant, arriere,côté ...
-                tableHeader[8] = "";
-                tableHeader[9] = "Epaisseur";	
-                tableHeader[10] = "typeImp";
-                tableHeader[11] = "linkFile";
-                tableHeader[12] = "ordre";
-                return tableHeader;
-            }
-            function loadHeaderCotation(){
-                tableHeader[0] = " ";
-                tableHeader[1] = "Type";
-                tableHeader[2] = "";
-                tableHeader[3] = "";
-                tableHeader[4] = "Couleur";
-                tableHeader[5] = "";
-                tableHeader[6] = "";
-                tableHeader[7] = "Hauteur du bord";//avant, arriere,côté ...
-                tableHeader[8] = "";
-                tableHeader[9] = "Epaisseur";	
-                tableHeader[10] = "typeImp";
-                tableHeader[11] = "linkFile";
-                tableHeader[12] = "ordre";
-                return tableHeader;
-            }
-            function loadHeaderLogo(){
-                tableHeader[0] = " ";
-                tableHeader[1] = "Type";
-                tableHeader[2] = "Index";
-                tableHeader[3] = "décalage X";
-                tableHeader[4] = "décalage Y";
-                tableHeader[5] = "Opacité";
-                tableHeader[6] = "Echelle";
-                tableHeader[7] = "Couleur";//avant, arriere,côté ...
-                tableHeader[8] = "Vue";
-                tableHeader[9] = "";	
-                tableHeader[10] = "typeImp";
-                tableHeader[11] = "linkFile";
-                tableHeader[12] = "ordre";
-                return tableHeader;
-            }
-            function loadHeaderCartouche(){
-                tableHeader[0] = " ";
-                tableHeader[1] = "Type";
-                tableHeader[2] = "Index";
-                tableHeader[3] = "décalage X";
-                tableHeader[4] = "décalage Y";
-                tableHeader[5] = "Opacité";
-                tableHeader[6] = "Echelle";
-                tableHeader[7] = "";//avant, arriere,côté ...
-                tableHeader[8] = "";	
-                tableHeader[9] = "";
-                tableHeader[10] = "";
-                tableHeader[11] = "linkFile";
-                tableHeader[12] = "ordre";
-                return tableHeader;
-            }
-            
-            
             function insertRow(arrow,tableId,functionToCall){
                 var theTable = document.getElementById(tableId);
                 var buttonnode;
@@ -214,10 +97,34 @@
                 setCookie(COOKIE_NAME+selIndex,arrow,5);
                 drawcaps();
             }
+            function addNewRowPalette(type,id,col,selIndex){
+                var arrow = new Array(COL_NUMBER);
+                arrow = loadDefaultValue(type);
+                arrow[col]=id;
+                arrow[INDEX_HEADER]=selIndex;
+                //insertRow(arrow,tableId,drawcaps);
+                var l = arrec.length;
+                arrec[l] = arrow;
+                //var nbrRow = document.getElementById(tableId).rows.length -1;//-2 si il y a le header
+                //var index = id.split("_");
+                //var selIndex = index[1];
+                setCookie(COOKIE_NAME+selIndex,arrow,5);
+                drawcaps();
+            }
+        
+            function addNewRowCaisse(newRow,selIndex){
+                var arrow = new Array(COL_NUMBER);
+                var index = arrec.length;
+                arrow = newRow;
+                arrec[index]=arrow;
+                setCookie(COOKIE_NAME+selIndex,arrow,5);
+                drawcaps();
+            }
+            
             function addNewRow2(tableId,newRow){
                 var val = allocateCookieId();
                 var arrow = new Array(COL_NUMBER);
-                arrow = newRow;;
+                arrow = newRow;
                 insertRow(arrow,tableId,drawcaps);
                 //var nbrRow = document.getElementById(tableId).rows.length -1;//-2 si il y a le header
                 //var index = id.split("_");
@@ -225,6 +132,7 @@
                 setCookie(COOKIE_NAME+selIndex,arrow,5);
                 drawcaps();
             }
+            
             
             function getRowNum(tableId,id,col){
                 var j=0;
@@ -236,6 +144,19 @@
                     if(val==id)
                         return j;
                 }
+                return 0;
+            }
+            function getRowNumArrec(id,col){
+                var j=0;
+                var val;
+                var rowCount = arrec.length;
+                for(j=0;j<rowCount;j++){
+                    var arrow = arrec[j];
+                    val = arrow[col];
+                    if(val==id)
+                        return j;
+                }
+                return 0;
             }
             
             function searchInTable(tableId,col,regex){
@@ -246,6 +167,20 @@
                 var rowCount = theTable.rows.length;
                 for(j=0;j<rowCount;j++){
                     val = getCell("myTable",j,col);
+                    if(regex==val)
+                        counter=counter+1;
+                }
+                return counter;
+            }
+            function searchInArray(col,regex){
+                var j;
+                var val;
+                var counter=0;
+                //var theTable = document.getElementById(tableId);
+                var rowCount = arrec.length;
+                for(j=0;j<rowCount;j++){
+                    var arrow = arrec[j];
+                    val = arrow[col];
                     if(regex==val)
                         counter=counter+1;
                 }
@@ -309,6 +244,30 @@
                 }
                 
                 setCookie(COOKIE_NAME+(row),arrCook,5);
+            }
+            function changeArrayRow(row,arrow)
+            {
+                var num = arrow[INDEX_HEADER];
+                setCookie(COOKIE_NAME+(num),arrow,5);
+            }
+            
+            function changeArrayValue(row,col,newValue)
+            {
+                var arrow = arrec[row];
+                var num = arrow[INDEX_HEADER];
+                arrow[col] = newValue;
+                setCookie(COOKIE_NAME+(num),arrow,5);
+                //var arrCook = getRowCookie(COOKIE_NAME+num);
+                //arrCook[col]=newValue;
+                //var x=document.getElementById(tableId).rows[row].cells;
+                //if(col>0){
+                //    x[col].innerHTML=newValue;
+                //}
+                //for(var i = 1;i<COL_NUMBER;i++){
+                //    arrCook[i] = x[i].innerHTML;
+                //}
+                
+                //setCookie(COOKIE_NAME+(num),arrCook,5);
             }
             
             function createHeader(divId,tableId,headers){

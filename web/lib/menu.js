@@ -3,13 +3,14 @@
 			var newValue = values.fill.red+","+values.fill.green+","+values.fill.blue;
                         var hexColor = color_d2h(newValue);
                         $(selectedItem.firstChild).attr('fill', hexColor);
-                        changeCell(tableId,selectedRow,FILLCOLOR_HEADER,hexColor);
+                        //changeCell(tableId,selectedRow,FILLCOLOR_HEADER,hexColor);
+                        changeArrayValue(selectedRow,FILLCOLOR_HEADER,hexColor);
                         
                         newValue = values.stroke.red+","+values.stroke.green+","+values.stroke.blue;
                         hexColor = color_d2h(newValue);
                         $(selectedItem.firstChild).attr('stroke', hexColor); 
-                        changeCell(tableId,selectedRow,STROKECOLOR_HEADER,hexColor);
-                        
+                        //changeCell(tableId,selectedRow,STROKECOLOR_HEADER,hexColor);
+                        changeArrayValue(selectedRow,STROKECOLOR_HEADER,hexColor);
                         //var opacity = values.fill.alpha;
                         //changeCell(tableId,selectedRow,selectedCol-(-1),opacity);
                         //drawcaps();
