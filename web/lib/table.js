@@ -102,13 +102,10 @@
                 arrow = loadDefaultValue(type);
                 arrow[col]=id;
                 arrow[INDEX_HEADER]=selIndex;
-                //insertRow(arrow,tableId,drawcaps);
                 var l = arrec.length;
                 arrec[l] = arrow;
-                //var nbrRow = document.getElementById(tableId).rows.length -1;//-2 si il y a le header
-                //var index = id.split("_");
-                //var selIndex = index[1];
                 setCookie(COOKIE_NAME+selIndex,arrow,5);
+                recordLine(arrow);
                 drawcaps();
             }
         
@@ -118,6 +115,7 @@
                 arrow = newRow;
                 arrec[index]=arrow;
                 setCookie(COOKIE_NAME+selIndex,arrow,5);
+                recordLine(arrow);
                 drawcaps();
             }
             
@@ -126,8 +124,6 @@
                 var arrow = new Array(COL_NUMBER);
                 arrow = newRow;
                 insertRow(arrow,tableId,drawcaps);
-                //var nbrRow = document.getElementById(tableId).rows.length -1;//-2 si il y a le header
-                //var index = id.split("_");
                 var selIndex = val - (-1);
                 setCookie(COOKIE_NAME+selIndex,arrow,5);
                 drawcaps();
@@ -176,7 +172,6 @@
                 var j;
                 var val;
                 var counter=0;
-                //var theTable = document.getElementById(tableId);
                 var rowCount = arrec.length;
                 for(j=0;j<rowCount;j++){
                     var arrow = arrec[j];
@@ -206,22 +201,6 @@
                 else
                     text = 0;
                 return text
-                
-                
-                
-                /*
-                var theTable = document.getElementById(tableId);
-                var rowCount = theTable.rows.length;
-                if(rowCount>0){
-                    var cell;
-    
-                    var z = 0;
-                    if(theTable.tBodies.length>0){
-                        cell=theTable.tBodies[z].rows[row].cells[col];
-                    }
-                }else
-                    cell=0;
-                return cell;*/
             }
             
             function addHeader(tableId){
@@ -249,6 +228,7 @@
             {
                 var num = arrow[INDEX_HEADER];
                 setCookie(COOKIE_NAME+(num),arrow,5);
+                updateLine(arrow);
             }
             
             function changeArrayValue(row,col,newValue)
@@ -257,17 +237,7 @@
                 var num = arrow[INDEX_HEADER];
                 arrow[col] = newValue;
                 setCookie(COOKIE_NAME+(num),arrow,5);
-                //var arrCook = getRowCookie(COOKIE_NAME+num);
-                //arrCook[col]=newValue;
-                //var x=document.getElementById(tableId).rows[row].cells;
-                //if(col>0){
-                //    x[col].innerHTML=newValue;
-                //}
-                //for(var i = 1;i<COL_NUMBER;i++){
-                //    arrCook[i] = x[i].innerHTML;
-                //}
-                
-                //setCookie(COOKIE_NAME+(num),arrCook,5);
+                updateLine(arrow);
             }
             
             function createHeader(divId,tableId,headers){
@@ -280,7 +250,6 @@
                 tab.cellPadding=0;
                 tab.cellSpacing=1;
                 tab.id = tableId;
-                //tab.onclick = function(){handleClick(event) }; 
                 var tbh=document.createElement('thead');
                 var rowh = document.createElement('tr');
                 var cellh;
@@ -293,16 +262,9 @@
                 tbh.appendChild(rowh);
 	
                 var tbo=document.createElement('tbody');
-
-                //tab.appendChild(tbh);
                 tab.appendChild(tbo);
                 
                 root.appendChild(tab);
-                //$("table").trigger("update"); 
-                // set sorting column and direction, this will sort on the first and third column 
-                //var sorting = [[2,1],[0,0]]; 
-                // sort on the first column 
-                //$("table").trigger("sorton",[sorting]); 
 
             }
             
@@ -313,7 +275,6 @@
                 var i;
                 for (i=1; i<rowLength; i++){
                     arrow[i] = document.getElementById(tableId).rows[index].cells[i].childNodes[0].data;
-                    //alert(arrow[i]);
                 }
                 return arrow;
             }

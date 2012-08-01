@@ -164,6 +164,62 @@ function loadDefaultValue(type){
                 } while(arrow != null && arrow != "");
             }
             
+            function recordLine(arrow){
+                var entry = {
+                btn: arrow[BTN_HEADER],
+                id: arrow[ID_HEADER],
+                index: parseInt(arrow[INDEX_HEADER]),
+                x: parseInt(arrow[X_HEADER]),
+                y: parseInt(arrow[Y_HEADER]),
+                transx: parseInt(arrow[TRANSX_HEADER]),
+                transy:parseInt(arrow[TRANSY_HEADER]),
+                rotate:parseInt(arrow[ROTATE_HEADER]),
+                forme:arrow[FORME_HEADER],
+                width:parseInt(arrow[WIDTH_HEADER]),
+                height:parseInt(arrow[HEIGHT_HEADER]),
+                arg1:arrow[ARG1_HEADER],
+                arg2:arrow[ARG2_HEADER],
+                texte:arrow[TEXTE_HEADER],
+                fillcolor:arrow[FILLCOLOR_HEADER],
+                strokecolor:arrow[STROKECOLOR_HEADER],
+                type:arrow[TYPE_HEADER],
+                lieu:arrow[LIEU_HEADER],
+                view:arrow[VIEW_HEADER],
+                ware:arrow[WARE_HEADER],
+                quantity:parseInt(arrow[QUANTITE_HEADER]),
+                order:parseInt(arrow[ORDER_HEADER])
+            };
+            stock.storeAdd(entry);
+            }
+            
+            function updateLine(arrow){
+              var entry = {
+                btn: arrow[BTN_HEADER],
+                id: arrow[ID_HEADER],
+                index: parseInt(arrow[INDEX_HEADER]),
+                x: parseInt(arrow[X_HEADER]),
+                y: parseInt(arrow[Y_HEADER]),
+                transx: parseInt(arrow[TRANSX_HEADER]),
+                transy:parseInt(arrow[TRANSY_HEADER]),
+                rotate:parseInt(arrow[ROTATE_HEADER]),
+                forme:arrow[FORME_HEADER],
+                width:parseInt(arrow[WIDTH_HEADER]),
+                height:parseInt(arrow[HEIGHT_HEADER]),
+                arg1:arrow[ARG1_HEADER],
+                arg2:arrow[ARG2_HEADER],
+                texte:arrow[TEXTE_HEADER],
+                fillcolor:arrow[FILLCOLOR_HEADER],
+                strokecolor:arrow[STROKECOLOR_HEADER],
+                type:arrow[TYPE_HEADER],
+                lieu:arrow[LIEU_HEADER],
+                view:arrow[VIEW_HEADER],
+                ware:arrow[WARE_HEADER],
+                quantity:parseInt(arrow[QUANTITE_HEADER]),
+                order:parseInt(arrow[ORDER_HEADER])
+            };
+                stock.storeUpdate(entry);
+                
+            }
             function loadTableFromCookie(){
                 
                 var cookieList = [];
@@ -197,6 +253,7 @@ function loadDefaultValue(type){
                     }
                 }
             }
+            
             function allocateCookieId(){
                 var cookieList = [];
                 var i = 0;

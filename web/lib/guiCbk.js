@@ -37,22 +37,10 @@ var transX=0;
 var w;
 var h;
 var offsetX=40;
-var offsetY=80;
+var offsetY=200;
 var mouseX;
 var mouseY;
 var activeView = "ROOM";
-
-//var REC_ID=0;
-//var REC_X=1;
-//var REC_Y=2;
-//var REC_W=3;
-//var REC_H=4;
-//var REC_TRANSX=5;
-//var REC_TRANSY=6;
-//var REC_QUANTITY=7;
-//var REC_VIEW=8;
-//var arrow=[];
-//var selectedRect=0;
 
 function addPalette(){
     var fillColor="yellow";
@@ -60,13 +48,14 @@ function addPalette(){
     var rowLength = 0;
     //if(document.getElementById(tableId)!= null)
     //    rowLength = document.getElementById(tableId).rows.length;   
-    rowLength = arrec.length;
-    indexPalette = rowLength ;
-    var id = "pal_"+indexPalette;
+    //rowLength = arrec.length;
+    //indexPalette = rowLength ;
+    var index =  window.localStorage.getItem("stock:index")
+    var id = "pal_"+index;
     //addNewRow("myTable","palette30","g"+id,ID_HEADER);
-    var selIndex = allocateCookieId() - (-1);
+    //var selIndex = allocateCookieId() - (-1);
     //arrow[INDEX_HEADER] = selIndex;
-    addNewRowPalette("palette30","g"+id,ID_HEADER,selIndex);
+    addNewRowPalette("palette30","g"+id,ID_HEADER,id);
 }
 
 function addProductBtn(){
@@ -77,19 +66,19 @@ function addProductBtn(){
 }
 
 function addCaisse(){
-    var fillColor="yellow";
-    var strokeColor="purple";
     var rowLength = 0;
     if(document.getElementById(tableId)!= null)
         rowLength = document.getElementById(tableId).rows.length;   
     
-    var val = allocateCookieId();
-    indexPalette = val -(-1) ;
+    //var val = allocateCookieId();
+    //indexPalette = val -(-1) ;
+    var index =  window.localStorage.getItem("stock:index")
+    indexPalette = index;
     var id = "cai_"+indexPalette;
     var arrow = new Array(COL_NUMBER);
     arrow[BTN_HEADER]="";
     arrow[ID_HEADER]="g"+id;
-    arrow[INDEX_HEADER]=rowLength;
+    arrow[INDEX_HEADER]=index;
     arrow[X_HEADER]=20;
     arrow[Y_HEADER]=20;
     arrow[TRANSX_HEADER]=0;
@@ -243,7 +232,7 @@ function initEventHandler(){
     if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
         ratioZoom=1;
         document.addEventListener('touchmove', function(event) {
-            event.preventDefault();
+            //event.preventDefault();
             var touch = event.touches[0];
             //console.log("Touch x:" + touch.pageX + ", y:" + touch.pageY);
             var touch = event.touches[0];
@@ -369,6 +358,8 @@ function tmouseDown(e){
                 if(mouseX>=1100)
                     return;
     lblState.setValue("down1",undefined);
+    lbltransx.setValue("x="+mouseX+" X1="+lx +" X2="+lw,undefined);
+            lbltransy.setValue("y="+mouseY+" Y1="+ly +" Y2="+lh,undefined);
                 
     for(var j=0;j<arrec.length;j++){
         arrow = arrec[j];//.split("");

@@ -200,7 +200,7 @@ function initialize() {
                         var cpTextStyles = {"font-family":"Arial,Helvetica","font-size":32,"fill":"dimgray"};
                         myMapApp.colourPickers["myColourPicker1"] = new colourPicker("colourPicker1","mainMenu",orix+70,oriy+400,800,400,cpBgStyles,cpTextStyles,"sliderSymbolCp",true,true,true,true,true,true,0,360,7,"0,255,0,1","0,0,0,0.7",undefined);
                         //create ok button
-			myMapApp.buttons["okbutton"] = new button("okbutton","mainMenu",alertColorValues,"rect","OK",undefined,orix+770,oriy + 720,80,60,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,1);
+			myMapApp.buttons["okbutton"] = new button("okbutton","mainMenu",alertColorValues,"rect","OK",undefined,orix+770,oriy + 720,120,120,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,1);
                         //hideCP();
                         /*
                         //combo
