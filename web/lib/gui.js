@@ -141,7 +141,8 @@ function initialize() {
                             arrow= readRow(tableId,tableIndex);
                         }
                         //display.rec(100,100,300,500);
-                        myMapApp.forme["cadreMenu"]= new forme("cadreMenu","mainMenu",20,-520,1000,1000,"yellow","2","purple",rectOver,rectOut);
+                        /*
+                         myMapApp.forme["cadreMenu"]= new forme("cadreMenu","mainMenu",20,-520,1000,1000,"yellow","2","purple",rectOver,rectOut);
                         var rect= document.createElementNS(svgNS,"rect");
                         rect.setAttributeNS(null,"x",10);
 			rect.setAttributeNS(null,"y",10);
@@ -149,12 +150,13 @@ function initialize() {
 			rect.setAttributeNS(null,"height",1000);
                         rect.setAttributeNS(null,"fill","red");
                         rect.setAttributeNS(null,"stroke","purple");
-                        /*        
+                         */        
+                                            /*        
                         //bouton Créer Palette$
                         myMapApp.buttons["vueCartonBtn"]= new button("vueCartonBtn","mainMenu",vueCartonBtnPressed,"rect","vue carton",undefined,orix+200,oriy-150,200,50,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,1);
                         myMapApp.buttons["vuePaletteBtn"]= new button("vueRoomBtn","mainMenu",vuePaletteBtnPressed,"rect","vue palette",undefined,orix+400,oriy-150,200,50,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,1);
                         */
-                        myMapApp.buttons["addProductBtn"]= new button("addProductBtn","mainMenu",addProductBtn,"rect","Ajouter Produit",undefined,orix+100,oriy+0,300,50,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,1);
+                        //myMapApp.buttons["addProductBtn"]= new button("addProductBtn","mainMenu",addProductBtn,"rect","Ajouter Produit",undefined,orix+100,oriy+0,300,50,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,1);
                         
                        var t=1400;
                         lblx = new label("lblx","mainMenu","",25,orix +100,oriy +100,800,50,textYOffset,textStyles,labelboxStyles,cursorStyles,selBoxStyles,undefined,undefined);//"[a-zA-Z ]"
@@ -196,11 +198,11 @@ function initialize() {
                         var textbutton2 = new button("textbutton2","textbuttons",buttonPressed,"rect",">>>>>>>>>>",undefined,orix + 500,oriy+900,400,100,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,1);
                         */
                         //first some colour picker styles
-                        var cpBgStyles = {"fill":"gainsboro"};
-                        var cpTextStyles = {"font-family":"Arial,Helvetica","font-size":32,"fill":"dimgray"};
-                        myMapApp.colourPickers["myColourPicker1"] = new colourPicker("colourPicker1","mainMenu",orix+70,oriy+400,800,400,cpBgStyles,cpTextStyles,"sliderSymbolCp",true,true,true,true,true,true,0,360,7,"0,255,0,1","0,0,0,0.7",undefined);
+                        //var cpBgStyles = {"fill":"gainsboro"};
+                        //var cpTextStyles = {"font-family":"Arial,Helvetica","font-size":32,"fill":"dimgray"};
+                        //myMapApp.colourPickers["myColourPicker1"] = new colourPicker("colourPicker1","mainMenu",orix,oriy+400,1000,800,cpBgStyles,cpTextStyles,"sliderSymbolCp",false,true,false,false,true,false,0,360,7,"0,255,0,1","0,0,0,0.7",undefined);
                         //create ok button
-			myMapApp.buttons["okbutton"] = new button("okbutton","mainMenu",alertColorValues,"rect","OK",undefined,orix+770,oriy + 720,120,120,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,1);
+			//myMapApp.buttons["okbutton"] = new button("okbutton","mainMenu",alertColorValues,"rect","OK",undefined,orix+770,oriy + 720,120,120,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,1);
                         //hideCP();
                         /*
                         //combo

@@ -78,22 +78,22 @@ graphic.prototype.drawPalette30 = function(){
                 
                 svg.path(group,pathMask.move(300, 20).line(0,800,0));*/
     //trait de séparation des vues
-    var g = svg.group({stroke: 'black', strokeWidth: 2}); 
-    svg.line(g, 75, 15, 75, 135); 
+    var g = svg.group({stroke: 'black', strokeWidth: 10}); 
+    svg.line(g, 600, 100, 600, 800); 
     
     //
-    var g1 = svg.group({stroke: 'black', strokeWidth: 0.5}); 
+    var g1 = svg.group({stroke: 'black', strokeWidth: 5}); 
     
     
    //vue avant coté gauche
-   svg.line(g1, 30, 15, 30, 135); 
+   svg.line(g1, 270, 100, 270, 800); 
     for(i=0;i<9;i++){
-        svg.line(g1, 0, 15+(i*15), 60, 15+(i*15));
+        svg.line(g1, 0, 90+(i*90), 540, 90+(i*90));
     }
     //vue arriere coté droit
-    svg.line(g1, 120, 15, 120, 135); 
+    svg.line(g1, 870, 100, 870, 800); 
     for(i=0;i<9;i++){
-        svg.line(g1, 90, 15+(i*15), 150, 15+(i*15));
+        svg.line(g1, 660, 90+(i*90), 1080, 90+(i*90));
     }
             }
 graphic.prototype.drawVue = function(nomGroupe,orix,oriy,b,h,diamTete,color1,color2,strokeColor,opacite){

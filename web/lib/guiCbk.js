@@ -29,6 +29,7 @@ var selectedPalette;
 var selectedIndexOver=-1;
 var selectedItemOver;
 var selectedItem;
+var previousSelectedItem;
 
 var indexRec=0;
 var recX;
@@ -107,11 +108,27 @@ function addCaisse(){
 }
 function vuePaletteBtnPressed(){
     activeView="ROOM";
+    var btn = document.getElementById("vuePalette");
+    btn.disabled=true;
+    //var btnCarton = document.getElementById("vueCarton");
+    //btnCarton.disabled=false;
+    //var btnAdd = document.getElementById("addBtn").childNodes[0];
+    //btnAdd.innerHTML ="Ajouter une palette";
+    document.getElementById('addBtn').value= "Ajouter une palette";
     drawcaps();
 }
 function vueCartonBtnPressed(){
     activeView="CARTON";
+    var btn = document.getElementById("vuePalette");
+    btn.disabled=false;
+    var btnCarton = document.getElementById("vueCarton");
+    btnCarton.disabled=true;
     selectedPalette = selectedItem.getAttributeNS(null,"id");
+    //var btnAdd = document.getElementById("addBtn").childNodes[0];
+    //btnAdd.innerHTML ="Ajouter un carton";//setAttribute("value", "Ajouter un carton");
+    document.getElementById('addBtn').value= "Ajouter un carton";
+    var btnAdd = document.getElementById("addBtn");
+    btnAdd.disabled=false;
     drawcaps();
 }
 
@@ -232,7 +249,7 @@ function initEventHandler(){
     if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
         ratioZoom=1;
         document.addEventListener('touchmove', function(event) {
-            //event.preventDefault();
+            event.preventDefault();
             var touch = event.touches[0];
             //console.log("Touch x:" + touch.pageX + ", y:" + touch.pageY);
             var touch = event.touches[0];
@@ -242,14 +259,14 @@ function initEventHandler(){
         }, false);
 
         document.addEventListener('touchstart', function(event) {
-            event.preventDefault();
+            //event.preventDefault();
             var touch = event.touches[0];
             mouseX = touch.pageX;
             mouseY = touch.pageY;
             tmouseDown(event);
         });
         document.addEventListener('touchend', function(event) {
-            event.preventDefault();
+            //event.preventDefault();
             lblState.setValue("up",undefined);
             tmouseUp(event);
         }, false);
@@ -267,6 +284,10 @@ function svgClickedBckg(e) {
     if(e.clientX>=1100)
        return;
     if(bOver==0){
+        if(activeView=="ROOM"){
+            var btnCarton = document.getElementById("vueCarton");
+            btnCarton.disabled=true;
+        }
         nbrClick=0;
         if(itemFocused==1){
             itemFocused=0;
@@ -294,7 +315,10 @@ function svgClicked() {
     //}
     lblIndex.setValue("nbrclick="+nbrClick);
     if(nbrClick==2){
-        vueCartonBtnPressed();
+        if(activeView=="ROOM")
+            vueCartonBtnPressed();
+        //else
+          //  vuePaletteBtnPressed();
     } 
 } 
  
@@ -351,72 +375,9 @@ function getNbrCaisse(lclSelectedItem){
     return searchInArray(VIEW_HEADER,item);
 }
 
-function tmouseDown(e){
-    var touch = e.changedTouches.item(0);
-                mouseX = touch.pageX;
-                mouseY = touch.pageY;
-                if(mouseX>=1100)
-                    return;
-    lblState.setValue("down1",undefined);
-    lbltransx.setValue("x="+mouseX+" X1="+lx +" X2="+lw,undefined);
-            lbltransy.setValue("y="+mouseY+" Y1="+ly +" Y2="+lh,undefined);
-                
-    for(var j=0;j<arrec.length;j++){
-        arrow = arrec[j];//.split("");
-        var lx=arrow[X_HEADER]+arrow[TRANSX_HEADER]+offsetX;
-        var ly=arrow[Y_HEADER]+arrow[TRANSY_HEADER]+offsetY;
-        var lw=arrow[WIDTH_HEADER]+lx;
-        var lh=arrow[HEIGHT_HEADER]+ly;
-        if( (mouseX>lx) && (mouseX<lw) && (mouseY>ly) && (mouseY<lh) ) {
-            selectedRect = j;
-            selectedItem= document.getElementById(arrow[ID_HEADER]);
-            var item = selectedItem.getAttributeNS(null,"id");
-            lblDrag.setValue(item);
-            
-            lbltransx.setValue("x="+mouseX+" X1="+lx +" X2="+lw,undefined);
-            lbltransy.setValue("y="+mouseY+" Y1="+ly +" Y2="+lh,undefined);
-                
-            $(selectedItem.firstChild).attr('stroke', 'lime'); 
-            transx=arrow[TRANSX_HEADER];
-            transy=arrow[TRANSY_HEADER];
-            bOver=1;
-            break;
-        }else
-            bOver=0;
-    }
-    if(bOver==1){
-        GetInitCoordx = mouseX;
-        GetInitCoordy = mouseY;
-        start_drag = 1;
-    }else
-        start_drag = 0;
-}
+
            
-function tmouseUp(e){
-    lblState.setValue("Mouse is up",undefined);
-    var touch = e.changedTouches.item(0);
-    mouseX = touch.pageX;
-    mouseY = touch.pageY;
-    $(selectedItem.firstChild).attr('stroke', 'black'); 
-    lbltransx.setValue(mouseX,undefined);
-    lbltransy.setValue(mouseY,undefined);
-                
-    if((start_drag) &&(bDragging)){
-        start_drag = 0;
-        transx=dx;
-        transy=dy;
-        arrow[TRANSX_HEADER]=transx;
-        arrow[TRANSY_HEADER]=transy;
-        arrec[selectedRect]=arrow;
-        transx=0;
-        transy=0;
-    }
-    start_drag = 0;
-    bDragging = 0;
-    dx=0;
-    dy=0;
-                
-}
+
 
 function tmouseMove(e){
     var touch = e.touches[0];
@@ -435,7 +396,59 @@ function tmouseMove(e){
         bDragging=0;
     }
 }
-
+function tmouseDown(e){
+    var arrow=[];
+    var touch = e.changedTouches.item(0);
+                mouseX = touch.pageX;
+                mouseY = touch.pageY;
+                if(mouseX>=1100)
+                    return;
+    lblState.setValue("down1",undefined);
+    lbltransx.setValue("x="+mouseX+" X1="+lx +" X2="+lw,undefined);
+    lbltransy.setValue("y="+mouseY+" Y1="+ly +" Y2="+lh,undefined);
+                
+    for(var j=0;j<arrec.length;j++){
+        arrow = arrec[j];//.split("");
+        var lx=arrow[X_HEADER]+arrow[TRANSX_HEADER]+offsetX;
+        var ly=arrow[Y_HEADER]+arrow[TRANSY_HEADER]+offsetY;
+        var lw=arrow[WIDTH_HEADER]+lx;
+        var lh=arrow[HEIGHT_HEADER]+ly;
+        if( (mouseX>lx) && (mouseX<lw) && (mouseY>ly) && (mouseY<lh) ) {
+            selectedRect = j;
+            previousSelectedItem = selectedItem;
+            selectedItem= document.getElementById(arrow[ID_HEADER]);
+            var item = selectedItem.getAttributeNS(null,"id");
+            
+            selectedIndex = getRowNumArrec(item,ID_HEADER);
+            selectedRow = selectedIndex;
+            
+            
+            
+            lblDrag.setValue(item);
+            lbltransx.setValue("x="+mouseX+" X1="+lx +" X2="+lw,undefined);
+            lbltransy.setValue("y="+mouseY+" Y1="+ly +" Y2="+lh,undefined);
+                
+            $(previousSelectedItem.firstChild).attr('stroke','black'); 
+            $(selectedItem.firstChild).attr('stroke','red'); 
+            
+            if(activeView=="ROOM"){
+                var btnCarton = document.getElementById("vueCarton");
+                btnCarton.disabled=false;
+            }
+            transx=arrow[TRANSX_HEADER];
+            transy=arrow[TRANSY_HEADER];
+            bOver=1;
+            break;
+        }else
+            bOver=0;
+    }
+    if(bOver==1){
+        GetInitCoordx = mouseX;
+        GetInitCoordy = mouseY;
+        start_drag = 1;
+    }else
+        start_drag = 0;
+}
 function mouseDown(e){
     if(e.clientX>=1100)
         return;
@@ -450,14 +463,11 @@ function mouseDown(e){
             GetInitCoordx = e.clientX;
             GetInitCoordy = e.clientY;
             var arrow = arrec[selectedIndex];
-            transx = arrow[TRANSX_HEADER];//getCell("myTable",selectedIndex,TRANSX_HEADER);
+            transx = arrow[TRANSX_HEADER];
             transy = arrow[TRANSY_HEADER];
-            //var arrow = [];
-            //arrow = readRow(tableId,selectedIndex);
             selectedRow = selectedIndex;
             start_drag = 1;
             var count = getNbrCaisse(selectedIndex);
-            //changeCell(tableId,selectedRow,QUANTITE_HEADER,count);
             var arrow = arrec[selectedRow];
             arrow[QUANTITE_HEADER]=count;
         }
@@ -472,13 +482,15 @@ function mouseDown(e){
             GetInitCoordx = e.clientX;
             GetInitCoordy = e.clientY;
             var arrow = arrec[selectedIndex];
-            transx = arrow[TRANSX_HEADER];//getCell("myTable",selectedIndex,TRANSX_HEADER);
+            transx = arrow[TRANSX_HEADER];
             transy = arrow[TRANSY_HEADER];
-            //var arrow = [];
-            //arrow = readRow(tableId,selectedIndex);
             selectedRow = selectedIndex;
         }
         $(selectedItem.firstChild).attr('stroke','red'); 
+        if(activeView=="ROOM"){
+            var btnCarton = document.getElementById("vueCarton");
+            btnCarton.disabled=false;
+        }
         lblIndex.setValue(selectedIndex);
         lbltransx.setValue(transx,undefined);
         lbltransy.setValue(transy,undefined);
@@ -506,7 +518,6 @@ function mouseUp(e){
         changeArrayRow(selectedRow,arrow);
         //changeArrayValue(selectedRow,TRANSX_HEADER,dx);
         //changeArrayValue(selectedRow,TRANSY_HEADER,dy);
-        start_drag = 0;
         lblDrag.setValue("drag=0");
         lbltransx.setValue(dx,undefined);
         lbltransy.setValue(dy,undefined);
@@ -519,7 +530,35 @@ function mouseUp(e){
                 
                 
 }
-            
+function tmouseUp(e){
+    lblState.setValue("Mouse is up",undefined);
+    var touch = e.changedTouches.item(0);
+    mouseX = touch.pageX;
+    mouseY = touch.pageY;
+    //$(selectedItem.firstChild).attr('stroke', 'black'); 
+    lbltransx.setValue(mouseX,undefined);
+    lbltransy.setValue(mouseY,undefined);
+                
+    if((start_drag) &&(bDragging)){
+        start_drag = 0;
+        transx=dx;
+        transy=dy;
+        var arrow = arrec[selectedRow];
+        arrow[TRANSX_HEADER]=transx;
+        arrow[TRANSY_HEADER]=transy;
+        //arrec[selectedRect]=arrow;
+        changeArrayRow(selectedRow,arrow);
+        //previousSelectedItem = selectedItem;
+        transx=0;
+        transy=0;
+    }
+    start_drag = 0;
+    bDragging = 0;
+    dx=0;
+    dy=0;
+                
+}
+
 function mouseMove(e){
     nbrClick=0;
     lblState.setValue("move",undefined);

@@ -7,8 +7,8 @@
     /*#svgrow{width: 842px; height: 842px;float:none;background:#888888; border: 2px solid #484;}*/
     #svgrow{width: 100%; height: 842px;float:none;background:#888888; border: 0px solid #484;}
     
-    #svgbasics { width: 70%; height: 100%;float:left;background:#ECECEC; border: 0px solid #484; }
-    #svgmenu { width: 30%; height: 100%;float:right;background:#ECECEC; border: 0px solid #484; }
+    #svgbasics { width: 80%; height: 100%;float:left;background:#ECECEC; border: 0px solid #484; }
+    #svgmenu { width: 20%; height: 100%;float:right;background:#ECECEC; border: 0px solid #484; }
     #right_column{width:0%;float:left;background:#CCC;}
     #footer{clear:both;background:#999;}
 
