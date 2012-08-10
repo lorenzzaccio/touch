@@ -5,7 +5,7 @@
 
 var COL_NUMBER = 22;
 var COOKIE_NAME="stock";
-var defaultValue=[];
+
 var typeArr =  [];
 typeArr[0] = "palette30";
 typeArr[1] = "palette60";
@@ -16,11 +16,12 @@ typeArr[5] = "divers";
 
             
 function loadDefaultValue(type){
+    var defaultValue=[];
                 if(type==typeArr[0]){
                     var k = 1;
-                    defaultValue[0] = 0;
+                    defaultValue[0] = 0;            //index
+                    //defaultValue[k++] = 0;          //index
                     defaultValue[k++] = "#pal";     //component id
-                    defaultValue[k++] = 0;          //index
                     defaultValue[k++] = 20;         //x
                     defaultValue[k++] = 20;         //y
                     defaultValue[k++] = 0;          //transx
@@ -40,13 +41,14 @@ function loadDefaultValue(type){
                     defaultValue[k++] = "caisses";  //type de marchandise
                     defaultValue[k++] = 12;         //quantité
                     defaultValue[k++] = 10;         //classement
+                    defaultValue[k++] = 0;         //sync
                 }
                 
                 if(type==typeArr[1]){
-                    var k=0;
-                    defaultValue[0] = 0;
+                    var k=1;
+                    defaultValue[0] = 0;            //index
+                    //defaultValue[k++] = 0;          //index
                     defaultValue[k++] = "#pal";    //component id
-                    defaultValue[k++] = 0;          //index
                     defaultValue[k++] = 20;         //x
                     defaultValue[k++] = 20;         //y
                     defaultValue[k++] = 0;         //transx
@@ -66,12 +68,13 @@ function loadDefaultValue(type){
                     defaultValue[k++] = "caisses";  //type de marchandise
                     defaultValue[k++] = 24;         //quantité
                     defaultValue[k++] = 10;          //classement
+                    defaultValue[k++] = 0;         //sync
                 }
                  if(type==typeArr[2]){
-                    var k=0;
-                    defaultValue[0] = 0;
+                    var k=1;
+                    defaultValue[0] = 0;            //index
+                    //defaultValue[k++] = 0;       
                     defaultValue[k++] = "#pal";    //component id
-                    defaultValue[k++] = 0;          //index
                     defaultValue[k++] = 20;         //x
                     defaultValue[k++] = 20;         //y
                     defaultValue[k++] = 0;         //transx
@@ -90,21 +93,22 @@ function loadDefaultValue(type){
                     defaultValue[k++] = "room";     //contenant parent
                     defaultValue[k++] = "caisses";  //type de marchandise
                     defaultValue[k++] = 12;         //quantite
-                    defaultValue[k++] = 10;          //classement
+                    defaultValue[k++] = 10;         //classement
+                    defaultValue[k++] = 0;          //sync
                 }
                  if(type==typeArr[3]){
-                    var k=0;
-                    defaultValue[0] = 0;
+                    var k=1;
+                    defaultValue[0] = 0;            //index
+                    //defaultValue[k++] = 0;          
                     defaultValue[k++] = "#cai";    //component id
-                    defaultValue[k++] = 0;          //index
                     defaultValue[k++] = 20;         //x
                     defaultValue[k++] = 20;         //y
                     defaultValue[k++] = 0;         //transx
                     defaultValue[k++] = 0;         //transy
                     defaultValue[k++] = 0;         //rotation
                     defaultValue[k++] = "rectangle" //forme
-                    defaultValue[k++] = 20          //largeur
-                    defaultValue[k++] = 15          //hauteur
+                    defaultValue[k++] = 160          //largeur
+                    defaultValue[k++] = 80          //hauteur
                     defaultValue[k++] = 0           //arg
                     defaultValue[k++] = 0           //arg  
                     defaultValue[k++] = "caisse25"  //texte
@@ -116,6 +120,7 @@ function loadDefaultValue(type){
                     defaultValue[k++] = "coiffes";  //type de marchandise
                     defaultValue[k++] = 2500;       //quantite
                     defaultValue[k++] = 20;          //classement
+                    defaultValue[k++] = 0;         //sync
                 }
                 return defaultValue;
             }
@@ -166,9 +171,9 @@ function loadDefaultValue(type){
             
             function recordLine(arrow){
                 var entry = {
-                btn: arrow[BTN_HEADER],
-                id: arrow[ID_HEADER],
+                //btn: arrow[BTN_HEADER],
                 index: parseInt(arrow[INDEX_HEADER]),
+                id: arrow[ID_HEADER],
                 x: parseInt(arrow[X_HEADER]),
                 y: parseInt(arrow[Y_HEADER]),
                 transx: parseInt(arrow[TRANSX_HEADER]),
@@ -187,16 +192,46 @@ function loadDefaultValue(type){
                 view:arrow[VIEW_HEADER],
                 ware:arrow[WARE_HEADER],
                 quantity:parseInt(arrow[QUANTITE_HEADER]),
-                order:parseInt(arrow[ORDER_HEADER])
+                order:parseInt(arrow[ORDER_HEADER]),
+                sync:parseInt(arrow[SYNC_HEADER])
             };
             stock.storeAdd(entry);
             }
             
+            function sendPhp(arrow){
+                send_array(arrow);
+                /*
+                var TABLE_NAME = "stockplan";
+                var request = "insert into "+TABLE_NAME+" VALUES(";
+                for(var i=1;i<arrow.length;i++){
+                    if(i==1)
+                        arrow[i]='null';
+                    request = request+"'"+arrow[i]+"'";
+                    if((i+1)<arrow.length) 
+                        request=request+",";
+                    else
+                        request=request+")";
+                }
+                //setDb("\""+request+"\"");
+                return request;*/
+            }
+            
+            function updatePhp(val1,val2,cond1,cond2){
+                update(val1,val2,cond1,cond2);
+            }
+            function syncM2SPhp(){
+                var j=0;
+                var rowCount = arrec.length;
+                for(j=0;j<rowCount;j++){
+                    var arrow = arrec[j];
+                    syncM2S(arrow);
+                } 
+            }
             function updateLine(arrow){
               var entry = {
-                btn: arrow[BTN_HEADER],
-                id: arrow[ID_HEADER],
+                //btn: arrow[BTN_HEADER],
                 index: parseInt(arrow[INDEX_HEADER]),
+                id: arrow[ID_HEADER],
                 x: parseInt(arrow[X_HEADER]),
                 y: parseInt(arrow[Y_HEADER]),
                 transx: parseInt(arrow[TRANSX_HEADER]),
@@ -215,7 +250,8 @@ function loadDefaultValue(type){
                 view:arrow[VIEW_HEADER],
                 ware:arrow[WARE_HEADER],
                 quantity:parseInt(arrow[QUANTITE_HEADER]),
-                order:parseInt(arrow[ORDER_HEADER])
+                order:parseInt(arrow[ORDER_HEADER]),
+                sync:parseInt(arrow[SYNC_HEADER])
             };
                 stock.storeUpdate(entry);
                 

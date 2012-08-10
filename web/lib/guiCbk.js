@@ -44,19 +44,9 @@ var mouseY;
 var activeView = "ROOM";
 
 function addPalette(){
-    var fillColor="yellow";
-    var strokeColor="purple";
-    var rowLength = 0;
-    //if(document.getElementById(tableId)!= null)
-    //    rowLength = document.getElementById(tableId).rows.length;   
-    //rowLength = arrec.length;
-    //indexPalette = rowLength ;
-    var index =  window.localStorage.getItem("stock:index")
+    var index =  window.localStorage.getItem("stock:index");
     var id = "pal_"+index;
-    //addNewRow("myTable","palette30","g"+id,ID_HEADER);
-    //var selIndex = allocateCookieId() - (-1);
-    //arrow[INDEX_HEADER] = selIndex;
-    addNewRowPalette("palette30","g"+id,ID_HEADER,id);
+    addNewRowPalette("palette30","g"+id,ID_HEADER,index);
 }
 
 function addProductBtn(){
@@ -65,55 +55,15 @@ function addProductBtn(){
     else
         addCaisse();
 }
-
 function addCaisse(){
-    var rowLength = 0;
-    if(document.getElementById(tableId)!= null)
-        rowLength = document.getElementById(tableId).rows.length;   
-    
-    //var val = allocateCookieId();
-    //indexPalette = val -(-1) ;
-    var index =  window.localStorage.getItem("stock:index")
-    indexPalette = index;
-    var id = "cai_"+indexPalette;
-    var arrow = new Array(COL_NUMBER);
-    arrow[BTN_HEADER]="";
-    arrow[ID_HEADER]="g"+id;
-    arrow[INDEX_HEADER]=index;
-    arrow[X_HEADER]=20;
-    arrow[Y_HEADER]=20;
-    arrow[TRANSX_HEADER]=0;
-    arrow[TRANSY_HEADER]=0;
-    arrow[ROTATE_HEADER]=0;
-    arrow[FORME_HEADER]="rectangle";
-    arrow[WIDTH_HEADER]=160;
-    arrow[HEIGHT_HEADER]=80;
-    arrow[ARG1_HEADER]=0;
-    arrow[ARG2_HEADER]=0;
-    arrow[TEXTE_HEADER]="caisse";
-    arrow[FILLCOLOR_HEADER]="orange";
-    arrow[STROKECOLOR_HEADER]="purple";
-    arrow[TYPE_HEADER]="caisse25";
-    arrow[LIEU_HEADER]="ay";
-    arrow[VIEW_HEADER]=selectedPalette;
-    arrow[WARE_HEADER]="coiffes";
-    arrow[QUANTITE_HEADER]=2500;
-    arrow[ORDER_HEADER]=20;
-    
-    //addNewRow2("myTable",arrow);
-    //var val = allocateCookieId();
-    var selIndex = allocateCookieId() - (-1);
-    arrow[INDEX_HEADER] = selIndex;
-    addNewRowCaisse(arrow,selIndex);
+    var index =  window.localStorage.getItem("stock:index");
+    var id = "cai_"+index;
+    addNewRowCaisse("caisse25","g"+id,ID_HEADER,index,selectedPalette);
 }
 function vuePaletteBtnPressed(){
     activeView="ROOM";
     var btn = document.getElementById("vuePalette");
     btn.disabled=true;
-    //var btnCarton = document.getElementById("vueCarton");
-    //btnCarton.disabled=false;
-    //var btnAdd = document.getElementById("addBtn").childNodes[0];
-    //btnAdd.innerHTML ="Ajouter une palette";
     document.getElementById('addBtn').value= "Ajouter une palette";
     drawcaps();
 }
@@ -124,8 +74,6 @@ function vueCartonBtnPressed(){
     var btnCarton = document.getElementById("vueCarton");
     btnCarton.disabled=true;
     selectedPalette = selectedItem.getAttributeNS(null,"id");
-    //var btnAdd = document.getElementById("addBtn").childNodes[0];
-    //btnAdd.innerHTML ="Ajouter un carton";//setAttribute("value", "Ajouter un carton");
     document.getElementById('addBtn').value= "Ajouter un carton";
     var btnAdd = document.getElementById("addBtn");
     btnAdd.disabled=false;
@@ -197,53 +145,7 @@ function drawRect(arrow){
     }
     return group;
 }
-/*
-function drawRect(rectId,fillColor,strokeColor,x,y,width,height,transx,transy){
-    var svg = $('#svgbasics').svg('get');
-    var group = svg.group(null,rectId,{
-        transform:"translate("+transx+","+transy+")"
-    });
 
-    var police="Verdana";
-    var color = strokeColor;
-    var taille = 2;
-    var opacite = 1;
-    var epaisseurTrait = 4;
-    recX = x;
-    recY=y;
-    w = width;
-    h = height;
-    svg.rect(group, x, y, width, height, 1, 1, {
-        id:rectId+"sub",
-        fill: fillColor, 
-        stroke: strokeColor, 
-        strokeWidth: epaisseurTrait,
-        transform:"translate(0,0)"
-    }); 
-    
-    var arrow = [];
-    arrow[ID_HEADER]=rectId;
-    arrow[X_HEADER]=x;
-    arrow[HEIGHT_HEADER]=y;
-    arrow[WIDTH_HEADER]=width;
-    arrow[HEIGHT_HEADER]=height;
-    arrow[TRANSX_HEADER]=transx;
-    arrow[TRANSY_HEADER]=transy;
-    arrow[QUANTITE_HEADER]=0;
-    arrow[VIEW_HEADER]=0;
-    
-    arrec[indexRec]=arrow;
-    indexRec=indexRec+1;
-    if (! ( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) )) {        
-        $('#'+rectId).bind('click', svgClicked);
-        $('#'+rectId).bind('mouseover', svgOver);
-        $('#'+rectId).bind('mouseout', svgOut); 
-    //$('#'+rectId).bind('contextmenu', svgRightClicked); 
-    //document.addEventListener('contextmenu',svgRichtClicked, false);
-    }
-    return group;
-}
-*/
 function initEventHandler(){
     
     if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
@@ -281,8 +183,8 @@ function initEventHandler(){
 }
 
 function svgClickedBckg(e) { 
-    if(e.clientX>=1100)
-       return;
+    //if(e.clientX>=1100)
+    //   return;
     if(bOver==0){
         if(activeView=="ROOM"){
             var btnCarton = document.getElementById("vueCarton");
@@ -317,36 +219,38 @@ function svgClicked() {
     if(nbrClick==2){
         if(activeView=="ROOM")
             vueCartonBtnPressed();
-        //else
-          //  vuePaletteBtnPressed();
     } 
 } 
  
 function svgOver() {        
+    var item;
     bOver=1;
     if( (itemFocused==1) && (start_drag==0)){
         selectedItemOver=this;
-        var item = selectedItemOver.getAttributeNS(null,"id");
-        if(item!=selectedIndex){
-            var row = getRowNumArrec(item,ID_HEADER);
+        item = selectedItemOver.getAttributeNS(null,"id");
+        var row = getRowNumArrec(item,ID_HEADER);
+        if(row!=selectedIndex){
+            //var row = getRowNumArrec(item,INDEX_HEADER);
             selectedIndexOver = row;
         }else
-            selectedIndexOver=-1;
+            selectedIndexOver=selectedIndex;
     }
                     
     if( (itemFocused==0) && (start_drag==0)){
         selectedItem = this;
-        var item = selectedItem.getAttributeNS(null,"id");
-        lblState.setValue(item);
-        var row = getRowNumArrec(item,ID_HEADER);
-        selectedIndex = row;//index[1];
-        lblIndex.setValue(selectedIndex);
+        item = selectedItem.getAttributeNS(null,"id");
+        
+        //var row = getRowNumArrec(item,ID_HEADER);
+        selectedIndex = getRowNumArrec(item,ID_HEADER);
+        
         var arrow = arrec[selectedIndex];
         transx = arrow[TRANSX_HEADER];//getCell("myTable",selectedIndex,TRANSX_HEADER);
         transy = arrow[TRANSY_HEADER];//getCell("myTable",selectedIndex,TRANSY_HEADER);
         lbltransx.setValue(transx,undefined);
         lbltransy.setValue(transy,undefined);
         lblItemSelected.setValue(item,undefined);
+        lblIndex.setValue("index="+selectedIndex);
+        lblState.setValue(item);
     }
     if((selectedIndexOver != selectedIndex)&&(start_drag==0))
         $(this.firstChild).attr('stroke', 'lime'); 
@@ -450,8 +354,8 @@ function tmouseDown(e){
         start_drag = 0;
 }
 function mouseDown(e){
-    if(e.clientX>=1100)
-        return;
+    //if(e.clientX>=1100)
+    //    return;
                 
     if(bOver==1){
         lblState.setValue("downOver",undefined);
@@ -495,7 +399,7 @@ function mouseDown(e){
         lbltransx.setValue(transx,undefined);
         lbltransy.setValue(transy,undefined);
         var item = selectedItem.getAttributeNS(null,"id");
-        lblItemSelected.setValue(item,undefined)
+        lblItemSelected.setValue("id="+item,undefined)
     }else{
         lblState.setValue("downOut",undefined);
         start_drag = 0;
@@ -516,6 +420,7 @@ function mouseUp(e){
         arrow[TRANSX_HEADER]=dx;
         arrow[TRANSY_HEADER]=dy;
         changeArrayRow(selectedRow,arrow);
+        
         //changeArrayValue(selectedRow,TRANSX_HEADER,dx);
         //changeArrayValue(selectedRow,TRANSY_HEADER,dy);
         lblDrag.setValue("drag=0");

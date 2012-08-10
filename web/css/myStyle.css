@@ -1,14 +1,14 @@
 @charset "UTF-8";
 /* CSS Document */
     #page_container{width:96%;margin:0 auto;}
-    #header{width:100%;margin:auto ;background:#CCC;}
+    #header{width:100%;margin:auto ;background:#FF9900;}
     geometry{width:100%;margin:auto ;background:#999;}
     #left_column{width:0%;float:left;background:#CCC;}
     /*#svgrow{width: 842px; height: 842px;float:none;background:#888888; border: 2px solid #484;}*/
     #svgrow{width: 100%; height: 842px;float:none;background:#888888; border: 0px solid #484;}
     
-    #svgbasics { width: 80%; height: 100%;float:left;background:#ECECEC; border: 0px solid #484; }
-    #svgmenu { width: 20%; height: 100%;float:right;background:#ECECEC; border: 0px solid #484; }
+    #svgbasics { width: 100%; height: 100%;float:left;background:#ECECEC; border: 4px solid #FF9900; }
+    #svgmenu { width: 0%; height: 100%;float:right;background:#ECECEC; border: 0px solid #484; }
     #right_column{width:0%;float:left;background:#CCC;}
     #footer{clear:both;background:#999;}
 

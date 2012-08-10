@@ -1,0 +1,50 @@
+<style type="text/css">
+#ajaxBox { background-color:#FFFF99; border:thin solid #FF0000; width:70%; height:50px;}
+#formHeader{text-align:center; font-size:18px; color:#0000FF;}
+#myform{text-align:center;}
+</style>
+
+
+<script language="javascript" src="jquery/jquery-1.7.2.js"></script>
+
+<script language="javascript">
+$(document).ready(function() { //Finish loading the entire page before processing any javascript
+
+$("#hidden").hide();
+$("#textfield").val("");
+$("#textarea").val("");
+
+$("#mylist a").bind("click", function() { 
+var hol=$(this).attr('myval');
+var formContent ="action=getlink&link="+hol;
+
+$.getJSON("testJson.php",formContent, function(json){
+    alert(json.name);
+$("#textfield").val(json.name);
+$("#textarea").val(json.desc);
+$("#formHeader").text("Edit");
+$("#ajaxBox").text("All info loaded OK");
+}); //End json
+
+}); //End click
+
+}); //End ready function
+</script>
+
+<div id="ajaxBox"></div>
+
+<div id="mylist">
+<ul>
+<li><a href="#" myval="1">cool site</a></li>
+<li><a href="#" myval="2">new name</a></li>
+<li><a href="#" myval="3">great space</a></li>
+</ul>
+</div>
+
+<div id="myform">
+<div id="formHeader">Add New</div>
+<form name="form1" method="post" action="">
+<label>Name<input type="text" name="textfield" id="textfield"></label><br /><br />
+<label>Desc<textarea name="textarea" id="textarea" cols="45" rows="5"></textarea></label>
+</form>
+</div>

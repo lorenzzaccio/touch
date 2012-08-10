@@ -197,6 +197,11 @@
                 return fontArray;
             }
 	
+            function getDate(){
+                var ladate=new Date()
+                console.log(ladate.getFullYear() +"-"+(ladate.getMonth()+1)+"-"+ladate.getDate());
+            }
+            
             function taille_init(){
                 var fontArray = [];
                 var i = 0;

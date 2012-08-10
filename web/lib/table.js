@@ -6,8 +6,8 @@
             function loadHeader(){
                 var k=1
                 tableHeader[0] = " ";
-                tableHeader[k++] = "id";
                 tableHeader[k++] = "index";
+                tableHeader[k++] = "id";
                 tableHeader[k++] = "x";
                 tableHeader[k++] = "y";
                 tableHeader[k++] = "transx";
@@ -27,6 +27,7 @@
                 tableHeader[k++] = "marchandise";
                 tableHeader[k++] = "quantité";
                 tableHeader[k++] = "classement";
+                tableHeader[k++] = "sync";
                 return tableHeader;
             }
             
@@ -98,17 +99,41 @@
                 drawcaps();
             }
             function addNewRowPalette(type,id,col,selIndex){
-                var arrow = new Array(COL_NUMBER);
-                arrow = loadDefaultValue(type);
-                arrow[col]=id;
-                arrow[INDEX_HEADER]=selIndex;
+                var lclArrow = new Array(COL_NUMBER);
+                lclArrow = loadDefaultValue(type);
+                lclArrow[col]=id;
+                lclArrow[INDEX_HEADER]=selIndex;
                 var l = arrec.length;
-                arrec[l] = arrow;
-                setCookie(COOKIE_NAME+selIndex,arrow,5);
-                recordLine(arrow);
+                arrec[l] = lclArrow;
+                setCookie(COOKIE_NAME+selIndex,lclArrow,5);
+                recordLine(lclArrow);
+                //sendPhp(lclArrow);
                 drawcaps();
             }
-        
+            
+            function addNewRowCaisse(type,id,col,selIndex,parent){
+                var lclArrow = new Array(COL_NUMBER);
+                lclArrow = loadDefaultValue(type);
+                lclArrow[col]=id;
+                lclArrow[INDEX_HEADER]=selIndex;
+                lclArrow[VIEW_HEADER]=parent;
+                var l = arrec.length;
+                arrec[l] = lclArrow;
+                setCookie(COOKIE_NAME+selIndex,lclArrow,5);
+                recordLine(lclArrow);
+                //sendPhp(lclArrow);
+                drawcaps();
+            }
+            function syncLclStorage(arr){
+                var l = arr.length;
+                var i=0;
+                for(i=0;i<l;i++){
+                    arrow = arr[i];
+                    arrec[i] = arrow;
+                    recordLine(arrow);
+                }
+            }
+            /*
             function addNewRowCaisse(newRow,selIndex){
                 var arrow = new Array(COL_NUMBER);
                 var index = arrec.length;
@@ -116,8 +141,9 @@
                 arrec[index]=arrow;
                 setCookie(COOKIE_NAME+selIndex,arrow,5);
                 recordLine(arrow);
+                sendPhp(arrow);
                 drawcaps();
-            }
+            }*/
             
             function addNewRow2(tableId,newRow){
                 var val = allocateCookieId();
@@ -229,6 +255,12 @@
                 var num = arrow[INDEX_HEADER];
                 setCookie(COOKIE_NAME+(num),arrow,5);
                 updateLine(arrow);
+            }
+            function updateTransValues(row,arrow,index)
+            {
+                updatePhp("plan_transx",arrow[TRANSX_HEDAER],"plan_index",index);
+                updatePhp("plan_transy",arrow[TRANSY_HEDAER],"plan_index",index);
+                changeArrayRow(row,arrow)
             }
             
             function changeArrayValue(row,col,newValue)
