@@ -166,27 +166,23 @@ function initEventHandler(){
         document.addEventListener('touchmove', function(event) {
             event.preventDefault();
             var touch = event.touches[0];
-            //console.log("Touch x:" + touch.pageX + ", y:" + touch.pageY);
             var touch = event.touches[0];
-            mouseX = touch.pageX;
-            mouseY = touch.pageY;
+            mouseX = touch.clientX;//pageX;
+            mouseY = touch.clientY;//pageY;
             tmouseMove(event);
         }, false);
 
         document.addEventListener('touchstart', function(event) {
-            //event.preventDefault();
             var touch = event.touches[0];
-            mouseX = touch.pageX;
-            mouseY = touch.pageY;
+            mouseX = touch.clientX;
+            mouseY = touch.clientY;
             tmouseDown(event);
         });
         document.addEventListener('touchend', function(event) {
-            //event.preventDefault();
             lblState.setValue("up",undefined);
             tmouseUp(event);
         }, false);
     }else{
-        //EnableContext();
         ratioZoom=1;
         $("svg").bind('mousedown',mouseDown);
         $("svg").bind("mouseup", mouseUp);
@@ -294,8 +290,8 @@ function getNbrCaisse(lclSelectedItem){
 
 function tmouseMove(e){
     var touch = e.touches[0];
-    mouseX = touch.pageX;
-    mouseY = touch.pageY;
+    mouseX = touch.clientX;
+    mouseY = touch.clientY;
     //lblState.setValue("tmove",undefined);
     if(start_drag==1){
         bDragging=1;
@@ -312,8 +308,8 @@ function tmouseMove(e){
 function tmouseDown(e){
     var arrow=[];
     var touch = e.changedTouches.item(0);
-                mouseX = touch.pageX;
-                mouseY = touch.pageY;
+                mouseX = touch.clientX;
+                mouseY = touch.clientY;
     var xoff = parseFloat(document.getElementById("xoff").value);
     var yoff = parseFloat(document.getElementById("yoff").value);
     //alert("xoff="+xoff);
@@ -379,7 +375,6 @@ function mouseDown(e){
     //    return;
                 
     if(bOver==1){
-        //lblState.setValue("downOver",undefined);
                     
         if((selectedIndexOver != selectedIndex)&&(itemFocused==1)&&(selectedIndexOver!=-1) ){
             $(selectedItem.firstChild).attr('stroke', 'black');
@@ -399,7 +394,6 @@ function mouseDown(e){
                     
         if((selectedIndexOver == selectedIndex)&&(itemFocused==1)&&(selectedIndexOver!=-1)){
             start_drag = 1;
-            //lblDrag.setValue("drag=1");
         }
         if((selectedItem)&&(itemFocused==0)){
             itemFocused=1;
@@ -416,15 +410,9 @@ function mouseDown(e){
             var btnCarton = document.getElementById("vueCarton");
             btnCarton.disabled=false;
         }
-        //lblIndex.setValue(selectedIndex);
-        //lbltransx.setValue(transx,undefined);
-        //lbltransy.setValue(transy,undefined);
         var item = selectedItem.getAttributeNS(null,"id");
-        //lblItemSelected.setValue("id="+item,undefined)
     }else{
-        //lblState.setValue("downOut",undefined);
         start_drag = 0;
-        //lblDrag.setValue("drag=0");
         if ((start_drag==0)&&(itemFocused==1)){
             itemFocused=0;
             $(selectedItem.firstChild).attr('stroke', 'black'); 
@@ -440,9 +428,6 @@ function mouseUp(e){
         arrow[TRANSX_HEADER]=dx;//*ratioZoom;
         arrow[TRANSY_HEADER]=dy;//*ratioZoom;
         changeArrayRow(selectedRow,arrow);
-        //lblDrag.setValue("drag=0");
-        //lbltransx.setValue(dx,undefined);
-        //lbltransy.setValue(dy,undefined);
     }
     start_drag = 0;
     bDragging = 0;
@@ -456,10 +441,9 @@ function tmouseUp(e){
     var svg = $('#svgbasics').svg('get');
     svg.getElementById("gVirtRect"); 
     svg.remove(virtRect);
-    //lblState.setValue("Mouse is up",undefined);
     var touch = e.changedTouches.item(0);
-    mouseX = touch.pageX;
-    mouseY = touch.pageY;
+    mouseX = touch.clientX;
+    mouseY = touch.clientY;
                 
     if((start_drag) &&(bDragging)){
         start_drag = 0;
@@ -479,9 +463,6 @@ function tmouseUp(e){
 
 function mouseMove(e){
     nbrClick=0;
-    //lblState.setValue("move",undefined);
-    //lblx.setValue(e.clientX,undefined);
-    //lbly.setValue(e.clientY,undefined);
     if(start_drag==1){
                     
         bDragging=1;
