@@ -37,8 +37,8 @@ var recY;
 var transX=0;
 var w;
 var h;
-var offsetX=40;
-var offsetY=200;
+var offsetX=0;//40;
+var offsetY=0;//200;
 var mouseX;
 var mouseY;
 var activeView = "ROOM";
@@ -102,7 +102,20 @@ function drawText(group,id,strokeColor,texte,lineNumber,transx,transy){
     }); 
     svg.text(g, transx, transy-(-15*lineNumber), texte);    
 }
+var virtRect;
+function drawVirtualRect(x,y,w,h){
+    var svg = $('#svgbasics').svg('get');
+    var group = svg.group(null,"gVirtRect");
 
+    svg.rect(group, x, y, w, h, 1, 1, {
+        id:"virtRect",
+        fill: "none", 
+        stroke: "black", 
+        strokeWidth: 5,
+        transform:"translate(0,0)"
+    }); 
+    return group;
+}
 function drawRect(arrow){
     
     var rectId= arrow[ID_HEADER];
@@ -197,7 +210,7 @@ function svgClickedBckg(e) {
         //hideCP();
         }
         start_drag=0;
-        lblDrag.setValue("drag=0");
+        //lblDrag.setValue("drag=0");
         selectedItem=null;
         //selectedItemOver=null;
         selectedIndex=-1;
@@ -209,13 +222,11 @@ function resetClick(){
     nbrClick=0;
 }
 function svgClicked() { 
-    lblState.setValue("click",undefined);
+    //lblState.setValue("click",undefined);
                     
     nbrClick = parseInt(nbrClick)+1;
-    //if(nbrClick==1){
     window.setTimeout(resetClick,200);
-    //}
-    lblIndex.setValue("nbrclick="+nbrClick);
+    //lblIndex.setValue("nbrclick="+nbrClick);
     if(nbrClick==2){
         if(activeView=="ROOM")
             vueCartonBtnPressed();
@@ -230,7 +241,6 @@ function svgOver() {
         item = selectedItemOver.getAttributeNS(null,"id");
         var row = getRowNumArrec(item,ID_HEADER);
         if(row!=selectedIndex){
-            //var row = getRowNumArrec(item,INDEX_HEADER);
             selectedIndexOver = row;
         }else
             selectedIndexOver=selectedIndex;
@@ -240,17 +250,16 @@ function svgOver() {
         selectedItem = this;
         item = selectedItem.getAttributeNS(null,"id");
         
-        //var row = getRowNumArrec(item,ID_HEADER);
         selectedIndex = getRowNumArrec(item,ID_HEADER);
         
         var arrow = arrec[selectedIndex];
         transx = arrow[TRANSX_HEADER];//getCell("myTable",selectedIndex,TRANSX_HEADER);
         transy = arrow[TRANSY_HEADER];//getCell("myTable",selectedIndex,TRANSY_HEADER);
-        lbltransx.setValue(transx,undefined);
-        lbltransy.setValue(transy,undefined);
-        lblItemSelected.setValue(item,undefined);
-        lblIndex.setValue("index="+selectedIndex);
-        lblState.setValue(item);
+        //lbltransx.setValue(transx,undefined);
+        //lbltransy.setValue(transy,undefined);
+        //lblItemSelected.setValue(item,undefined);
+        //lblIndex.setValue("index="+selectedIndex);
+        //lblState.setValue(item);
     }
     if((selectedIndexOver != selectedIndex)&&(start_drag==0))
         $(this.firstChild).attr('stroke', 'lime'); 
@@ -287,14 +296,14 @@ function tmouseMove(e){
     var touch = e.touches[0];
     mouseX = touch.pageX;
     mouseY = touch.pageY;
-    lblState.setValue("tmove",undefined);
+    //lblState.setValue("tmove",undefined);
     if(start_drag==1){
         bDragging=1;
         dx = (mouseX-GetInitCoordx)*ratioZoom - (-transx);
         dy = (mouseY-GetInitCoordy)*ratioZoom- (-transy);
         $(selectedItem).attr("transform", "translate("+dx+","+dy+")");
-        lbltransx.setValue("dx="+dx,undefined);
-        lbltransy.setValue("dy="+dy,undefined);
+        //lbltransx.setValue("dx="+dx,undefined);
+        //lbltransy.setValue("dy="+dy,undefined);
     }else{
                     
         bDragging=0;
@@ -305,19 +314,31 @@ function tmouseDown(e){
     var touch = e.changedTouches.item(0);
                 mouseX = touch.pageX;
                 mouseY = touch.pageY;
-                if(mouseX>=1100)
-                    return;
-    lblState.setValue("down1",undefined);
-    lbltransx.setValue("x="+mouseX+" X1="+lx +" X2="+lw,undefined);
-    lbltransy.setValue("y="+mouseY+" Y1="+ly +" Y2="+lh,undefined);
+    var xoff = parseFloat(document.getElementById("xoff").value);
+    var yoff = parseFloat(document.getElementById("yoff").value);
+    //alert("xoff="+xoff);
+    //alert("yoff="+yoff);
+    //draw virtual rect
+    virtRect = drawVirtualRect(mouseX-80/ratioZoom-(-xoff/ratioZoom),mouseY-40/ratioZoom-(-yoff/ratioZoom),160/ratioZoom,80/ratioZoom);
+                //if(mouseX>=1100)
+                //    return;
+    //lblState.setValue("down1",undefined);
+    //lbltransx.setValue("x="+mouseX+" X1="+lx +" X2="+lw,undefined);
+    //lbltransy.setValue("y="+mouseY+" Y1="+ly +" Y2="+lh,undefined);
+    
                 
     for(var j=0;j<arrec.length;j++){
         arrow = arrec[j];//.split("");
-        var lx=arrow[X_HEADER]+arrow[TRANSX_HEADER]+offsetX;
-        var ly=arrow[Y_HEADER]+arrow[TRANSY_HEADER]+offsetY;
+        var lx=arrow[X_HEADER]+arrow[TRANSX_HEADER];
+        var ly=arrow[Y_HEADER]+arrow[TRANSY_HEADER];
         var lw=arrow[WIDTH_HEADER]+lx;
         var lh=arrow[HEIGHT_HEADER]+ly;
-        if( (mouseX>lx) && (mouseX<lw) && (mouseY>ly) && (mouseY<lh) ) {
+        var posx = mouseX + xoff/ratioZoom;
+        var posy = mouseY + yoff/ratioZoom;
+        document.getElementById("verb1").value="x="+posx+" X1="+lx +" X2="+lw;
+        document.getElementById("verb2").value="y="+posy+" Y1="+ly +" Y2="+lh;
+        
+        if( (posx>lx) && (posx<lw) && (posy>ly) && (posy<lh) ) {
             selectedRect = j;
             previousSelectedItem = selectedItem;
             selectedItem= document.getElementById(arrow[ID_HEADER]);
@@ -328,9 +349,9 @@ function tmouseDown(e){
             
             
             
-            lblDrag.setValue(item);
-            lbltransx.setValue("x="+mouseX+" X1="+lx +" X2="+lw,undefined);
-            lbltransy.setValue("y="+mouseY+" Y1="+ly +" Y2="+lh,undefined);
+            //lblDrag.setValue(item);
+            //lbltransx.setValue("x="+mouseX+" X1="+lx +" X2="+lw,undefined);
+            //lbltransy.setValue("y="+mouseY+" Y1="+ly +" Y2="+lh,undefined);
                 
             $(previousSelectedItem.firstChild).attr('stroke','black'); 
             $(selectedItem.firstChild).attr('stroke','red'); 
@@ -358,7 +379,7 @@ function mouseDown(e){
     //    return;
                 
     if(bOver==1){
-        lblState.setValue("downOver",undefined);
+        //lblState.setValue("downOver",undefined);
                     
         if((selectedIndexOver != selectedIndex)&&(itemFocused==1)&&(selectedIndexOver!=-1) ){
             $(selectedItem.firstChild).attr('stroke', 'black');
@@ -378,7 +399,7 @@ function mouseDown(e){
                     
         if((selectedIndexOver == selectedIndex)&&(itemFocused==1)&&(selectedIndexOver!=-1)){
             start_drag = 1;
-            lblDrag.setValue("drag=1");
+            //lblDrag.setValue("drag=1");
         }
         if((selectedItem)&&(itemFocused==0)){
             itemFocused=1;
@@ -395,15 +416,15 @@ function mouseDown(e){
             var btnCarton = document.getElementById("vueCarton");
             btnCarton.disabled=false;
         }
-        lblIndex.setValue(selectedIndex);
-        lbltransx.setValue(transx,undefined);
-        lbltransy.setValue(transy,undefined);
+        //lblIndex.setValue(selectedIndex);
+        //lbltransx.setValue(transx,undefined);
+        //lbltransy.setValue(transy,undefined);
         var item = selectedItem.getAttributeNS(null,"id");
-        lblItemSelected.setValue("id="+item,undefined)
+        //lblItemSelected.setValue("id="+item,undefined)
     }else{
-        lblState.setValue("downOut",undefined);
+        //lblState.setValue("downOut",undefined);
         start_drag = 0;
-        lblDrag.setValue("drag=0");
+        //lblDrag.setValue("drag=0");
         if ((start_drag==0)&&(itemFocused==1)){
             itemFocused=0;
             $(selectedItem.firstChild).attr('stroke', 'black'); 
@@ -412,20 +433,16 @@ function mouseDown(e){
 }
             
 function mouseUp(e){
-    lblState.setValue("Mouse is up",undefined);
+    //lblState.setValue("Mouse is up",undefined);
+    
     if((start_drag) &&(bDragging)){
-        //changeCell(tableId,selectedRow,TRANSX_HEADER,dx);
-        //changeCell(tableId,selectedRow,TRANSY_HEADER,dy);
         var arrow = arrec[selectedRow];
-        arrow[TRANSX_HEADER]=dx;
-        arrow[TRANSY_HEADER]=dy;
+        arrow[TRANSX_HEADER]=dx;//*ratioZoom;
+        arrow[TRANSY_HEADER]=dy;//*ratioZoom;
         changeArrayRow(selectedRow,arrow);
-        
-        //changeArrayValue(selectedRow,TRANSX_HEADER,dx);
-        //changeArrayValue(selectedRow,TRANSY_HEADER,dy);
-        lblDrag.setValue("drag=0");
-        lbltransx.setValue(dx,undefined);
-        lbltransy.setValue(dy,undefined);
+        //lblDrag.setValue("drag=0");
+        //lbltransx.setValue(dx,undefined);
+        //lbltransy.setValue(dy,undefined);
     }
     start_drag = 0;
     bDragging = 0;
@@ -436,24 +453,20 @@ function mouseUp(e){
                 
 }
 function tmouseUp(e){
-    lblState.setValue("Mouse is up",undefined);
+    var svg = $('#svgbasics').svg('get');
+    svg.getElementById("gVirtRect"); 
+    svg.remove(virtRect);
+    //lblState.setValue("Mouse is up",undefined);
     var touch = e.changedTouches.item(0);
     mouseX = touch.pageX;
     mouseY = touch.pageY;
-    //$(selectedItem.firstChild).attr('stroke', 'black'); 
-    lbltransx.setValue(mouseX,undefined);
-    lbltransy.setValue(mouseY,undefined);
                 
     if((start_drag) &&(bDragging)){
         start_drag = 0;
-        transx=dx;
-        transy=dy;
         var arrow = arrec[selectedRow];
-        arrow[TRANSX_HEADER]=transx;
-        arrow[TRANSY_HEADER]=transy;
-        //arrec[selectedRect]=arrow;
+        arrow[TRANSX_HEADER]=dx;
+        arrow[TRANSY_HEADER]=dy;
         changeArrayRow(selectedRow,arrow);
-        //previousSelectedItem = selectedItem;
         transx=0;
         transy=0;
     }
@@ -466,9 +479,9 @@ function tmouseUp(e){
 
 function mouseMove(e){
     nbrClick=0;
-    lblState.setValue("move",undefined);
-    lblx.setValue(e.clientX,undefined);
-    lbly.setValue(e.clientY,undefined);
+    //lblState.setValue("move",undefined);
+    //lblx.setValue(e.clientX,undefined);
+    //lbly.setValue(e.clientY,undefined);
     if(start_drag==1){
                     
         bDragging=1;

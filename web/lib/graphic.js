@@ -593,11 +593,6 @@ graphic.prototype.getOriY = function(){
 graphic.prototype.updateViewBox = function(){	
                 var svg = $('#svgbasics').svg('get');
                 svg.configure({viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh})
-                //var svgEle = document.getElementById('svgbasics');
-                //var box = svgEle.getAttribute('viewBox');
-                //box.split(/\s+|,/);
-                
-
             }
 
 graphic.prototype.readViewCookie = function(){

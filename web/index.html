@@ -3,6 +3,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <link rel="stylesheet" href="./css/myStyle.css" type="text/css" />
+        <link rel="stylesheet" href="./css/fd-slider.css" type="text/css" />
         <link href="./css/mcColorPicker.css" rel="stylesheet" type="text/css" />
         <title>Stock Manager</title>
         <script type="text/javascript" src="jquery/jquery-1.7.2.js"></script>
@@ -27,6 +28,7 @@
         <script type="text/javascript" src="lib/gui.js"></script>
         <script type="text/javascript" src="lib/forme.js"></script>
         <script type="text/javascript" src="lib/sql.js"></script>
+        <script type="text/javascript" src="lib/fd-slider.js"></script>
         <script src="lib/mcColorPicker.js" type="text/javascript"></script> 
         
        
@@ -51,12 +53,92 @@
                 $('#svgbasics').svg('get').clear();
                 g = $('#svgbasics').svg('get').group({id: 'mainGroup'});
                 myGraph = new graphic(g,globalVar);
-                initialize();
+                //initialize();
                 stock.init();
+                updateViewCookie();
+                initSlider();
             }
             
+            function updateViewCookie(){
+                var tabView = [];
+                tabView[0] = zoomx;
+                tabView[1] = zoomy;
+                tabView[2] = zoomw;
+                tabView[3] = zoomh;
+                setCookie("viewbox",tabView,5);
+            }
+            function initSlider(){
+                $('input[min]').each(function() {
+                this.onchange = updateS;
+                }); 
+            }
+            
+            function updateS(){
+                var val = parseFloat(this.value);
+                var svg = $('#svgbasics').svg('get');
+                
+                zoomw = 842*val;//  + step/ratioZoom;
+                zoomh = val*842;//  + step/ratioZoom;
+                ratioZoom = zoomw/842;
+                var toto = document.getElementById("wheelvalue");
+                toto.value=ratioZoom; 
+                svg.configure({viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh})
+                updateViewCookie()
+            }
+            var step = 80;
+            var zoomx = 0 ;
+            var zoomy = 0 ;
+            var zoomh = 800;
+            var zoomw = 842;
+            function left(){
+                var svg = $('#svgbasics').svg('get');
+                zoomx = zoomx + step/ratioZoom;
+                svg.configure({viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh})
+                updateViewCookie()
+            }
+            function right(){
+                var svg = $('#svgbasics').svg('get');
+                zoomx = zoomx - step/ratioZoom;
+                svg.configure({viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh})
+                updateViewCookie()
+            }
+            function down(){
+                var svg = $('#svgbasics').svg('get');
+                zoomy = zoomy  - step/ratioZoom;
+                svg.configure({viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh})
+                updateViewCookie()
+            }
+            
+            function up(){
+                var svg = $('#svgbasics').svg('get');
+                zoomy = zoomy  + step/ratioZoom;
+                svg.configure({viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh})
+                updateViewCookie()
+            }
+            
+            function zoommoins(){
+                var svg = $('#svgbasics').svg('get');
+                
+                zoomw = zoomw  + step/ratioZoom;
+                zoomh = zoomh  + step/ratioZoom;
+                ratioZoom = zoomw/842;
+                var toto = document.getElementById("wheelvalue");
+                toto.value=ratioZoom; 
+                svg.configure({viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh})
+                updateViewCookie()
+            }
+            
+            function zoomplus(){
+                var svg = $('#svgbasics').svg('get');
+                zoomw = zoomw  - step/ratioZoom;
+                zoomh = zoomh  - step/ratioZoom;
+                ratioZoom = zoomw/842;
+                svg.configure({viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh})
+                updateViewCookie()
+            }
             
             function drawcaps() {
+                myGraph.updateViewBox();
                 var displayList = []; 
                 
                 $('#svgbasics').svg('get').clear();
@@ -260,6 +342,18 @@ function OnColorChanged(selectedColor, colorPickerIndex) {
              <INPUT TYPE=button id ="update" style="width:100px;height:50px" VALUE="update" onClick="updateBtn()">
              <INPUT TYPE=button id ="syncM2S" style="width:100px;height:50px" VALUE="sync M2S" onClick="syncM2SBtn()">
              <INPUT TYPE=button id ="syncS2M" style="width:100px;height:50px" VALUE="sync S2M" onClick="syncS2MBtn()">
+             <INPUT TYPE=button id ="zoomplus" style="width:60px;height:50px" VALUE="zoom +" onClick="zoomplus()">
+             <INPUT TYPE=button id ="zoommoins" style="width:60px;height:50px" VALUE="zoom -" onClick="zoommoins()">
+             <INPUT TYPE=text id ="wheelvalue" style="width:60px;height:50px" VALUE="0" >
+             <INPUT TYPE=text id ="xoff" style="width:60px;height:50px" VALUE="0" >
+             <INPUT TYPE=text id ="yoff" style="width:60px;height:50px" VALUE="0" >
+             <INPUT TYPE=text id ="verb1" style="width:500px;height:50px" VALUE="0" >
+             <INPUT TYPE=text id ="verb2" style="width:500px;height:50px" VALUE="0" >
+             <form style="width:300px;">
+             <input type=text name="lines" min="0.5" max="4" step="0.5" value="1">
+             </form>
+             
+             
             <div id="svgrow">
                 <div id="svgbasics"></div>
                 <div id="svgmenu" >
