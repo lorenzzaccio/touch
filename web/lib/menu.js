@@ -17,14 +17,17 @@
                 }
                 function setHexColor(hexColor){
                     //var hexColor = color_d2h_cp(newValue);
-                    $(selectedItem.firstChild).attr('fill', hexColor);
-                    changeArrayValue(selectedRow,FILLCOLOR_HEADER,hexColor);
+                    if(itemFocused == 1){
+                        $(selectedItem.firstChild).attr('fill', hexColor);
+                        changeArrayValue(selectedRow,FILLCOLOR_HEADER,hexColor);
+                    }
                 }
                 function setColor(newValue){
                     var hexColor = color_d2h_cp(newValue);
-                    $(selectedItem.firstChild).attr('fill', hexColor);
-                    changeArrayValue(selectedRow,FILLCOLOR_HEADER,hexColor);
-                        
+                    if(itemFocused == 1){
+                        $(selectedItem.firstChild).attr('fill', hexColor);
+                        changeArrayValue(selectedRow,FILLCOLOR_HEADER,hexColor);
+                    }   
                     //newValue = values.stroke.red+","+values.stroke.green+","+values.stroke.blue;
                     //hexColor = color_d2h(newValue);
                     //$(selectedItem.firstChild).attr('stroke', hexColor); 

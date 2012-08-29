@@ -2,6 +2,8 @@
 /* CSS Document */
     #page_container{width:96%;margin:0 auto;}
     #header{width:100%;margin:auto ;background:#FF9900;}
+    #centermenu{width: 100%; float:none;background:FFFFFF; border: 0px solid #484;}
+    
     geometry{width:100%;margin:auto ;background:#999;}
     #left_column{width:0%;float:left;background:#CCC;}
     /*#svgrow{width: 842px; height: 842px;float:none;background:#888888; border: 2px solid #484;}*/
@@ -40,3 +42,43 @@ tr:hover td { background: #CAEFFD; color: #0768B3; cursor: pointer; }
   padding:0;
   background:#333;
 }
+.no-copy {
+	  -webkit-user-select: none;
+	}
+
+#headerDiv, #contentDiv {
+float: left;
+}
+#titleText {
+float: left;
+font-size: 1.1em;
+font-weight: bold;
+margin: 5px;
+}
+#myHeader {
+font-size: 1.1em;
+font-weight: bold;
+margin: 5px;
+}
+#headerDiv {
+background-color: #0037DB;
+color: #9EB6FF;
+}
+#contentDiv {
+width: 100%;background-color: #FF9900;
+}
+#myContent {
+margin: 5px 10px;
+}
+#headerDiv a {
+float: right;
+margin: 10px 10px 5px 5px;
+}
+#headerDiv a:hover {
+color: #FFFFFF;
+}
+#bar {
+width: 100%;background-color: #FF9900;
+}
+#prebar{ width:100%;height:50px;}
+#afterbar{ width:100%;height:50px;}

@@ -8,9 +8,13 @@ var indexPalette=1;
 var dy=0;
 var transx=0;
 var transy=0;
+var rotate_deg = 0;
+var texte = "";
 var ratioZoom=1;
 var GetInitCoordx=0;
 var GetInitCoordy=0;
+var GetInitCoordxVirtRect = 0;
+GetInitCoordyVirtRect = 0;
 var lblx ;
 var lbly ; 
 var lblState;
@@ -65,6 +69,7 @@ function vuePaletteBtnPressed(){
     var btn = document.getElementById("vuePalette");
     btn.disabled=true;
     document.getElementById('addBtn').value= "Ajouter une palette";
+    toggleVuePaletteMenu();
     drawcaps();
 }
 function vueCartonBtnPressed(){
@@ -77,6 +82,7 @@ function vueCartonBtnPressed(){
     document.getElementById('addBtn').value= "Ajouter un carton";
     var btnAdd = document.getElementById("addBtn");
     btnAdd.disabled=false;
+    toggleVueCartonMenu();
     drawcaps();
 }
 
@@ -86,7 +92,7 @@ function setEvents(rectId){
     $('#'+rectId).bind('mouseout', svgOut);
 }
 
-function drawText(group,id,strokeColor,texte,lineNumber,transx,transy){
+function drawText(group,id,strokeColor,texte,lineNumber,transx,transy,rotate){
     var svg = $('#svgbasics').svg('get');
     var police="Verdana";
     var color = strokeColor;
@@ -99,8 +105,8 @@ function drawText(group,id,strokeColor,texte,lineNumber,transx,transy){
         fontSize: taille, 
         fill: color,
         transform:"translate(0,0)"
-    }); 
-    svg.text(g, transx, transy-(-15*lineNumber), texte);    
+    }); // rotate("+rotate+")";
+    svg.text(g, transx, transy-(-15*(lineNumber-4)), texte);    
 }
 var virtRect;
 function drawVirtualRect(x,y,w,h){
@@ -120,11 +126,12 @@ function drawRect(arrow){
     
     var rectId= arrow[ID_HEADER];
     var x = arrow[X_HEADER];
-    var y = arrow[HEIGHT_HEADER];
+    var y = arrow[Y_HEADER];
     var w = arrow[WIDTH_HEADER];
     var h = arrow[HEIGHT_HEADER];
     var transx = arrow[TRANSX_HEADER];
     var transy = arrow[TRANSY_HEADER];
+    var rotate = arrow[ROTATE_HEADER];
     var quantite = arrow[QUANTITE_HEADER];
     var view = arrow[VIEW_HEADER];
     var strokeColor = arrow[STROKECOLOR_HEADER];
@@ -138,7 +145,7 @@ function drawRect(arrow){
     
     var svg = $('#svgbasics').svg('get');
     var group = svg.group(null,rectId,{
-        transform:"translate("+transx+","+transy+")"
+        transform:"translate("+transx+","+transy+") rotate("+rotate+")"
     });
 
     svg.rect(group, x, y, w, h, 1, 1, {
@@ -158,28 +165,37 @@ function drawRect(arrow){
     }
     return group;
 }
-
+function rotate(){
+    var arrow = arrec[selectedIndex];
+    var prec_rotate = parseInt(arrow[ROTATE_HEADER]);
+    var rot = prec_rotate + 45;
+    arrow[ROTATE_HEADER] = rot;
+    var xl = parseInt(arrow[X_HEADER]) + parseInt(arrow[TRANSX_HEADER]);
+    var yl = parseInt(arrow[Y_HEADER]) + parseInt(arrow[TRANSY_HEADER]);
+    $(selectedItem).attr("transform", "translate("+parseInt(arrow[TRANSX_HEADER])+","+parseInt(arrow[TRANSY_HEADER])+") rotate("+rot+")");
+    changeArrayRow(selectedRow,arrow);
+}
 function initEventHandler(){
     
     if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
         ratioZoom=1;
+        
         document.addEventListener('touchmove', function(event) {
             event.preventDefault();
-            var touch = event.touches[0];
-            var touch = event.touches[0];
-            mouseX = touch.clientX;//pageX;
-            mouseY = touch.clientY;//pageY;
+            //var touch = event.touches[0];
+            //mouseX = touch.clientX;//pageX;
+            //mouseY = touch.clientY;//pageY;
             tmouseMove(event);
         }, false);
 
         document.addEventListener('touchstart', function(event) {
-            var touch = event.touches[0];
+            /*var touch = event.touches[0];
             mouseX = touch.clientX;
-            mouseY = touch.clientY;
+            mouseY = touch.clientY;*/
             tmouseDown(event);
         });
         document.addEventListener('touchend', function(event) {
-            lblState.setValue("up",undefined);
+            //lblState.setValue("up",undefined);
             tmouseUp(event);
         }, false);
     }else{
@@ -206,13 +222,9 @@ function svgClickedBckg(e) {
         //hideCP();
         }
         start_drag=0;
-        //lblDrag.setValue("drag=0");
         selectedItem=null;
-        //selectedItemOver=null;
         selectedIndex=-1;
-    //selectedIndexOver=-1;
-    }
-                    
+    }                
 } 
 function resetClick(){
     nbrClick=0;
@@ -226,6 +238,10 @@ function svgClicked() {
     if(nbrClick==2){
         if(activeView=="ROOM")
             vueCartonBtnPressed();
+        else{
+        if(activeView=="CARTON")
+            vuePaletteBtnPressed();
+        }
     } 
 } 
  
@@ -251,11 +267,6 @@ function svgOver() {
         var arrow = arrec[selectedIndex];
         transx = arrow[TRANSX_HEADER];//getCell("myTable",selectedIndex,TRANSX_HEADER);
         transy = arrow[TRANSY_HEADER];//getCell("myTable",selectedIndex,TRANSY_HEADER);
-        //lbltransx.setValue(transx,undefined);
-        //lbltransy.setValue(transy,undefined);
-        //lblItemSelected.setValue(item,undefined);
-        //lblIndex.setValue("index="+selectedIndex);
-        //lblState.setValue(item);
     }
     if((selectedIndexOver != selectedIndex)&&(start_drag==0))
         $(this.firstChild).attr('stroke', 'lime'); 
@@ -290,14 +301,22 @@ function getNbrCaisse(lclSelectedItem){
 
 function tmouseMove(e){
     var touch = e.touches[0];
-    mouseX = touch.clientX;
-    mouseY = touch.clientY;
+    mouseX = touch.pageX;
+    mouseY = touch.pageY;
+    document.getElementById("verb4").value="x="+mouseX;
+    document.getElementById("verb5").value="y="+mouseY;
+    var svg = $('#svgbasics').svg('get');
+    var vr = svg.getElementById("gVirtRect"); 
+    dx = (mouseX-GetInitCoordxVirtRect)*ratioZoom;
+    dy = (mouseY-GetInitCoordyVirtRect)*ratioZoom;
+    $(virtRect).attr("transform", "translate("+dx+","+dy+")");
     //lblState.setValue("tmove",undefined);
     if(start_drag==1){
         bDragging=1;
         dx = (mouseX-GetInitCoordx)*ratioZoom - (-transx);
         dy = (mouseY-GetInitCoordy)*ratioZoom- (-transy);
         $(selectedItem).attr("transform", "translate("+dx+","+dy+")");
+        
         //lbltransx.setValue("dx="+dx,undefined);
         //lbltransy.setValue("dy="+dy,undefined);
     }else{
@@ -308,20 +327,18 @@ function tmouseMove(e){
 function tmouseDown(e){
     var arrow=[];
     var touch = e.changedTouches.item(0);
-                mouseX = touch.clientX;
-                mouseY = touch.clientY;
-    var xoff = parseFloat(document.getElementById("xoff").value);
-    var yoff = parseFloat(document.getElementById("yoff").value);
-    //alert("xoff="+xoff);
-    //alert("yoff="+yoff);
+    mouseX = touch.pageX;
+    mouseY = touch.pageY;
+    document.getElementById("verb4").value="x="+mouseX;
+    document.getElementById("verb5").value="y="+mouseY;
+    var xoff = parseInt(document.getElementById("xoff").value);
+    var yoff = parseInt(document.getElementById("yoff").value);
+document.getElementById("verb3").value="yoff="+parseInt(yoff);
     //draw virtual rect
-    virtRect = drawVirtualRect(mouseX-80/ratioZoom-(-xoff/ratioZoom),mouseY-40/ratioZoom-(-yoff/ratioZoom),160/ratioZoom,80/ratioZoom);
-                //if(mouseX>=1100)
-                //    return;
-    //lblState.setValue("down1",undefined);
-    //lbltransx.setValue("x="+mouseX+" X1="+lx +" X2="+lw,undefined);
-    //lbltransy.setValue("y="+mouseY+" Y1="+ly +" Y2="+lh,undefined);
-    
+    //virtRect = drawVirtualRect(mouseX-80/ratioZoom-(-xoff/ratioZoom),mouseY-40/ratioZoom-(-yoff/ratioZoom),160/ratioZoom,80/ratioZoom);
+    virtRect = drawVirtualRect(mouseX-(-xoff),mouseY-(-yoff),160,80);
+    GetInitCoordxVirtRect = mouseX;
+    GetInitCoordyVirtRect = mouseY;
                 
     for(var j=0;j<arrec.length;j++){
         arrow = arrec[j];//.split("");
@@ -329,8 +346,8 @@ function tmouseDown(e){
         var ly=arrow[Y_HEADER]+arrow[TRANSY_HEADER];
         var lw=arrow[WIDTH_HEADER]+lx;
         var lh=arrow[HEIGHT_HEADER]+ly;
-        var posx = mouseX + xoff/ratioZoom;
-        var posy = mouseY + yoff/ratioZoom;
+        var posx = mouseX + parseInt(xoff);
+        var posy = mouseY + parseInt(yoff);
         document.getElementById("verb1").value="x="+posx+" X1="+lx +" X2="+lw;
         document.getElementById("verb2").value="y="+posy+" Y1="+ly +" Y2="+lh;
         
@@ -342,12 +359,6 @@ function tmouseDown(e){
             
             selectedIndex = getRowNumArrec(item,ID_HEADER);
             selectedRow = selectedIndex;
-            
-            
-            
-            //lblDrag.setValue(item);
-            //lbltransx.setValue("x="+mouseX+" X1="+lx +" X2="+lw,undefined);
-            //lbltransy.setValue("y="+mouseY+" Y1="+ly +" Y2="+lh,undefined);
                 
             $(previousSelectedItem.firstChild).attr('stroke','black'); 
             $(selectedItem.firstChild).attr('stroke','red'); 
@@ -370,6 +381,77 @@ function tmouseDown(e){
     }else
         start_drag = 0;
 }
+function mmouseDown(e){
+    
+    /*
+    selectedItem = this;
+    item = selectedItem.getAttributeNS(null,"id");
+        
+    selectedIndex = getRowNumArrec(item,ID_HEADER);
+        
+    var arrow = arrec[selectedIndex];
+    alert("item="+selectedIndex);
+    */
+    var arrow=[];
+    var touch = e.changedTouches.item(0);
+    mouseX = touch.clientX;
+    mouseY = touch.clientY;
+    document.getElementById("verb1").value=mouseX;
+    document.getElementById("verb2").value=mouseY;
+    /*
+    var xoff = parseFloat(document.getElementById("xoff").value);
+    var yoff = parseFloat(document.getElementById("yoff").value);
+
+    //draw virtual rect
+    //virtRect = drawVirtualRect(mouseX-80/ratioZoom-(-xoff/ratioZoom),mouseY-40/ratioZoom-(-yoff/ratioZoom),160/ratioZoom,80/ratioZoom);
+    virtRect = drawVirtualRect(mouseX-(-xoff),mouseY-(-yoff),160,80);
+
+    
+                
+    for(var j=0;j<arrec.length;j++){
+        arrow = arrec[j];//.split("");
+        var lx=arrow[X_HEADER]+arrow[TRANSX_HEADER];
+        var ly=arrow[Y_HEADER]+arrow[TRANSY_HEADER];
+        var lw=arrow[WIDTH_HEADER]+lx;
+        var lh=arrow[HEIGHT_HEADER]+ly;
+        var posx = mouseX + xoff;
+        var posy = mouseY + yoff;
+        document.getElementById("verb1").value="x="+posx+" X1="+lx +" X2="+lw;
+        document.getElementById("verb2").value="y="+posy+" Y1="+ly +" Y2="+lh;
+        
+        if( (posx>lx) && (posx<lw) && (posy>ly) && (posy<lh) ) {
+            selectedRect = j;
+            previousSelectedItem = selectedItem;
+            selectedItem= document.getElementById(arrow[ID_HEADER]);
+            var item = selectedItem.getAttributeNS(null,"id");
+            
+            selectedIndex = getRowNumArrec(item,ID_HEADER);
+            selectedRow = selectedIndex;
+
+                
+            $(previousSelectedItem.firstChild).attr('stroke','black'); 
+            $(selectedItem.firstChild).attr('stroke','red'); 
+            
+            if(activeView=="ROOM"){
+                var btnCarton = document.getElementById("vueCarton");
+                btnCarton.disabled=false;
+            }
+            transx=arrow[TRANSX_HEADER];
+            transy=arrow[TRANSY_HEADER];
+            bOver=1;
+            break;
+        }else
+            bOver=0;
+    }
+    if(bOver==1){
+        GetInitCoordx = mouseX;
+        GetInitCoordy = mouseY;
+        start_drag = 1;
+    }else
+        start_drag = 0;
+        */
+}
+
 function mouseDown(e){
     //if(e.clientX>=1100)
     //    return;
@@ -385,16 +467,20 @@ function mouseDown(e){
             var arrow = arrec[selectedIndex];
             transx = arrow[TRANSX_HEADER];
             transy = arrow[TRANSY_HEADER];
+            rotate_deg = parseInt(arrow[ROTATE_HEADER]);
             selectedRow = selectedIndex;
             start_drag = 1;
+            if(activeView=="ROOM"){
             var count = getNbrCaisse(selectedIndex);
             var arrow = arrec[selectedRow];
             arrow[QUANTITE_HEADER]=count;
+            }
         }
                     
         if((selectedIndexOver == selectedIndex)&&(itemFocused==1)&&(selectedIndexOver!=-1)){
             start_drag = 1;
         }
+        
         if((selectedItem)&&(itemFocused==0)){
             itemFocused=1;
             start_drag = 1;
@@ -405,8 +491,29 @@ function mouseDown(e){
             transy = arrow[TRANSY_HEADER];
             selectedRow = selectedIndex;
         }
+        
+        
         $(selectedItem.firstChild).attr('stroke','red'); 
+        
         if(activeView=="ROOM"){
+            if(selectedItem){
+                var arrow = arrec[selectedIndex];
+                document.getElementById("textePalette").value = arrow[TEXTE_HEADER];
+                document.getElementById("nbrCarton").value=arrow[QUANTITE_HEADER];
+                rotate_deg = parseInt(arrow[ROTATE_HEADER]);
+            }
+            var btnCarton = document.getElementById("vueCarton");
+            btnCarton.disabled=false;
+        }
+        
+        if(activeView=="CARTON"){
+            if(selectedItem){
+                var arrow = arrec[selectedIndex];
+                document.getElementById("prefix").value=arrow[ARG1_HEADER];
+                document.getElementById("article").value=arrow[ARG2_HEADER];
+                document.getElementById("nbrCoiffes").value=arrow[QUANTITE_HEADER];
+                rotate_deg = parseInt(arrow[ROTATE_HEADER]);
+            }
             var btnCarton = document.getElementById("vueCarton");
             btnCarton.disabled=false;
         }
@@ -421,8 +528,6 @@ function mouseDown(e){
 }
             
 function mouseUp(e){
-    //lblState.setValue("Mouse is up",undefined);
-    
     if((start_drag) &&(bDragging)){
         var arrow = arrec[selectedRow];
         arrow[TRANSX_HEADER]=dx;//*ratioZoom;
@@ -432,18 +537,13 @@ function mouseUp(e){
     start_drag = 0;
     bDragging = 0;
     dx=0;
-    dy=0;
-                
-                
-                
+    dy=0;            
 }
 function tmouseUp(e){
     var svg = $('#svgbasics').svg('get');
     svg.getElementById("gVirtRect"); 
     svg.remove(virtRect);
     var touch = e.changedTouches.item(0);
-    mouseX = touch.clientX;
-    mouseY = touch.clientY;
                 
     if((start_drag) &&(bDragging)){
         start_drag = 0;
@@ -464,11 +564,13 @@ function tmouseUp(e){
 function mouseMove(e){
     nbrClick=0;
     if(start_drag==1){
-                    
-        bDragging=1;
+        if(!bDragging){            
+            bDragging=1;
+            //$(selectedItem).attr("transform", "rotate("+arrow[ROTATE_HEADER]+")");
+        }
         dx = (e.clientX-GetInitCoordx)*ratioZoom - (-transx);
         dy = (e.clientY-GetInitCoordy)*ratioZoom- (-transy);
-        $(selectedItem).attr("transform", "translate("+dx+","+dy+")");
+        $(selectedItem).attr("transform", "translate("+dx+","+dy+") rotate("+rotate_deg+")");
     }else{
                     
         bDragging=0;

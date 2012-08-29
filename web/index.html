@@ -57,6 +57,7 @@
                 stock.init();
                 updateViewCookie();
                 initSlider();
+                activeView="ROOM";
             }
             
             function updateViewCookie(){
@@ -76,9 +77,9 @@
             function updateS(){
                 var val = parseFloat(this.value);
                 var svg = $('#svgbasics').svg('get');
-                
-                zoomw = 842*val;//  + step/ratioZoom;
-                zoomh = val*842;//  + step/ratioZoom;
+                zoomx = 100 * val;
+                //zoomw = 842*val;//  + step/ratioZoom;
+                //zoomh = val*842;//  + step/ratioZoom;
                 ratioZoom = zoomw/842;
                 var toto = document.getElementById("wheelvalue");
                 toto.value=ratioZoom; 
@@ -177,14 +178,23 @@
                                     var width = arrow[WIDTH_HEADER];//posy
                                     var transx = arrow[TRANSX_HEADER];//transx
                                     var transy = arrow[TRANSY_HEADER];//transy
+                                    var rotate = arrow[ROTATE_HEADER];
                                     var texte = arrow[TEXTE_HEADER];//texte
+                                    var arg1 = arrow[ARG1_HEADER];
+                                    var arg2 = arrow[ARG2_HEADER];
                                     var fillColor = arrow[FILLCOLOR_HEADER];//color
                                     var strokeColor = arrow[STROKECOLOR_HEADER];//stroke color
                                     var quantite = arrow[QUANTITE_HEADER];//quantity
                                     
                                     var group = drawRect(arrow);
-                                    drawText(group,id,strokeColor,texte,0,x-(-5),y-(-height));
-                                    drawText(group,id,strokeColor,quantite.toString() ,1,x-(-5),y-(-height));
+                                    if(activeView=="ROOM"){
+                                        drawText(group,id,strokeColor,texte,0,x-(-5),y-(-height),rotate);
+                                        drawText(group,id,strokeColor,quantite.toString() ,1,x-(-5),y-(-height),rotate);
+                                    }
+                                    if (activeView=="CARTON"){
+                                        drawText(group,id,strokeColor,arg1+"-"+arg2,0,x-(-5),y-(-height),rotate);
+                                        drawText(group,id,strokeColor,quantite.toString() ,1,x-(-5),y-(-height),rotate);
+                                    }
                                     
                                     }
                           }
@@ -322,7 +332,40 @@ function OnColorChanged(selectedColor, colorPickerIndex) {
             divB.style.color = selectedColor; */
         //alert(selectedColor);
         setColor(selectedColor);
-}                
+}   
+function setDesc(){
+    var arrow = arrec[selectedRow];
+    if(activeView=="ROOM"){
+    arrow[TEXTE_HEADER] = document.getElementById("textePalette").value;
+    }
+    if(activeView=="CARTON"){
+        arrow[ARG1_HEADER] = document.getElementById("prefix").value;
+        arrow[ARG2_HEADER] = document.getElementById("article").value;
+        arrow[QUANTITE_HEADER] = document.getElementById("nbrCoiffes").value;
+    }
+    changeArrayRow(selectedRow,arrow);
+}
+function toggle2(showHideDiv, switchTextDiv) {
+	var ele = document.getElementById(showHideDiv);
+	var text = document.getElementById(switchTextDiv);
+	if(ele.style.display == "block") {
+    		ele.style.display = "none";
+		text.innerHTML = "restore";
+  	}
+	else {
+		ele.style.display = "block";
+		text.innerHTML = "collapse";
+	}
+}
+
+function toggleVueCartonMenu(){
+    document.getElementById("descrip_palette").style.display="none";
+    document.getElementById("descrip_carton").style.display="block";
+}
+function toggleVuePaletteMenu(){
+    document.getElementById("descrip_palette").style.display="block";
+    document.getElementById("descrip_carton").style.display="none";
+}
         </script>
         
     </head>
@@ -331,31 +374,61 @@ function OnColorChanged(selectedColor, colorPickerIndex) {
             <div id="header">
                 <h1>Stock Manager</h1>
             </div>
-            
-            <div id="left_column"></div>
-            <input type="button" id="cinput2" class="color" value="#00aa00" style="width:100px;height:60px;display:all" onClick="setHexColor(value)" />
-            <INPUT TYPE=button id ="addBtn" style="width:200px;height:50px" VALUE="ajouter palette" onClick="addProductBtn()">
-            <INPUT TYPE=button id ="vuePalette" style="width:100px;height:50px" VALUE="vue palette" onClick="vuePaletteBtnPressed()">
+            <div id="headerDiv">
+            <div id="titleText">Hide/Show Div Demo - Click here ==></div><a id="myHeader" href="javascript:toggle2('centermenu','myHeader');" >collapse</a>
+            </div>
+           <INPUT TYPE=button id ="vuePalette" style="width:100px;height:50px" VALUE="vue palette" onClick="vuePaletteBtnPressed()">
             <INPUT TYPE=button id ="vueCarton" style="width:100px;height:50px" VALUE="vue carton" onClick="vueCartonBtnPressed()" disabled>
-            <INPUT TYPE=button id ="getClient" style="width:100px;height:50px" VALUE="requête" onClick="ajaxFunction()">
-            <INPUT TYPE=button id ="removeAll" style="width:100px;height:50px" VALUE="clean" onClick="removeLclDb()">
-             <INPUT TYPE=button id ="update" style="width:100px;height:50px" VALUE="update" onClick="updateBtn()">
-             <INPUT TYPE=button id ="syncM2S" style="width:100px;height:50px" VALUE="sync M2S" onClick="syncM2SBtn()">
-             <INPUT TYPE=button id ="syncS2M" style="width:100px;height:50px" VALUE="sync S2M" onClick="syncS2MBtn()">
-             <INPUT TYPE=button id ="zoomplus" style="width:60px;height:50px" VALUE="zoom +" onClick="zoomplus()">
-             <INPUT TYPE=button id ="zoommoins" style="width:60px;height:50px" VALUE="zoom -" onClick="zoommoins()">
-             <INPUT TYPE=text id ="wheelvalue" style="width:60px;height:50px" VALUE="0" >
-             <INPUT TYPE=text id ="xoff" style="width:60px;height:50px" VALUE="0" >
-             <INPUT TYPE=text id ="yoff" style="width:60px;height:50px" VALUE="0" >
-             <INPUT TYPE=text id ="verb1" style="width:500px;height:50px" VALUE="0" >
-             <INPUT TYPE=text id ="verb2" style="width:500px;height:50px" VALUE="0" >
-             <form style="width:300px;">
-             <input type=text name="lines" min="0.5" max="4" step="0.5" value="1">
-             </form>
-             
-             
+            <div style="clear:both;"></div>
+            <div id="contentDiv">
+                <div id="descrip_palette" style="display: block;">
+                    <INPUT TYPE=text id ="textePalette" style="width:200px;height:50px" VALUE="desc palette" >
+                    <INPUT TYPE=text id ="nbrCarton" style="width:60px;height:50px" VALUE="12" >
+                    <INPUT TYPE=button id ="descBtn" style="width:60px;height:50px" VALUE="OK" onClick="setDesc()">
+                    <input type="button" id="cinput2" class="color" value="#00aa00" style="width:100px;height:60px;display:all" onClick="setHexColor(value)" />
+                    <INPUT TYPE=button id ="addBtn" style="width:200px;height:50px" VALUE="ajouter palette" onClick="addProductBtn()">
+                    <INPUT TYPE=button id ="rotate" style="width:60px;height:50px" VALUE="rotation" onClick="rotate()">
+                </div>
+                <div id="descrip_carton" style="display: none;">
+                    <INPUT TYPE=text id ="prefix" style="width:60px;height:50px" VALUE="C10" >
+                    <INPUT TYPE=text id ="article" style="width:60px;height:50px" VALUE="02000127" >
+                    <INPUT TYPE=text id ="nbrCoiffes" style="width:60px;height:50px" VALUE="2500" >
+                    <INPUT TYPE=button id ="descBtn" style="width:60px;height:50px" VALUE="OK" onClick="setDesc()">
+                    <input type="button" id="cinput2" class="color" value="#00aa00" style="width:100px;height:60px;display:all" onClick="setHexColor(value)" />
+                    <INPUT TYPE=button id ="addBtn" style="width:200px;height:50px" VALUE="ajouter palette" onClick="addProductBtn()">
+                        <INPUT TYPE=button id ="rotate" style="width:60px;height:50px" VALUE="rotation" onClick="rotate()">
+                </div>
+                
+                
+                
+            
+            <div id="centermenu" style="display: block;">
+                <INPUT TYPE=button id ="getClient" style="width:100px;height:50px" VALUE="requête" onClick="ajaxFunction()">
+                <INPUT TYPE=button id ="removeAll" style="width:100px;height:50px" VALUE="clean" onClick="removeLclDb()">
+                <INPUT TYPE=button id ="update" style="width:100px;height:50px" VALUE="update" onClick="updateBtn()">
+                <INPUT TYPE=button id ="syncM2S" style="width:100px;height:50px" VALUE="sync M2S" onClick="syncM2SBtn()">
+                <INPUT TYPE=button id ="syncS2M" style="width:100px;height:50px" VALUE="sync S2M" onClick="syncS2MBtn()">
+                <INPUT TYPE=button id ="zoomplus" style="width:60px;height:50px" VALUE="zoom +" onClick="zoomplus()">
+                <INPUT TYPE=button id ="zoommoins" style="width:60px;height:50px" VALUE="zoom -" onClick="zoommoins()">
+                <INPUT TYPE=text id ="wheelvalue" style="width:60px;height:50px" VALUE="0" >
+                <INPUT TYPE=text id ="xoff" style="width:60px;height:50px" VALUE="-80" >
+                <INPUT TYPE=text id ="yoff" style="width:60px;height:50px" VALUE="-320" >
+                <INPUT TYPE=text id ="verb1" style="width:150px;height:50px" VALUE="0" >
+                <INPUT TYPE=text id ="verb2" style="width:150px;height:50px" VALUE="0" >
+                <INPUT TYPE=text id ="verb3" style="width:150px;height:50px" VALUE="0" >
+                <INPUT TYPE=text id ="verb4" style="width:150px;height:50px" VALUE="0" >
+                <INPUT TYPE=text id ="verb5" style="width:150px;height:50px" VALUE="0" >
+             </div>
+                 <div id="prebar" style="display: block;">
+                 </div>
+                <div id="bar" style="display: block;">
+                <input TYPE=text name="lines" style="alignment-adjust: middle" min="0" max="10" step="0.5" value="0">
+                </div>
+                <div id="afterbar" style="display: block;">
+                 </div>
+            </div>
             <div id="svgrow">
-                <div id="svgbasics"></div>
+                <div id="svgbasics" class="no-copy"></div>
                 <div id="svgmenu" >
                         <svg id="mainMenu"  viewBox="0 0 1024 768" width="100%" height="100%"  xmlns:xlink="http://www.w3.org/1999/xlink" onload="initialize()" zoomAndPan="disable" xml:space="preserve">	
                             <g id="mainBackground"/>
