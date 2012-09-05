@@ -168,3 +168,12 @@ function syncS2MPhp(){
                         });*/
                 });
 }
+function syncS2MArticlePhp(){
+    var arr = [];
+    /* call the php that has the php array which is json_encoded */
+    $.getJSON('syncS2MArticle.php', function(data) {
+    /* data will hold the php array as a javascript object */
+    arr = data[0];
+    syncLclStorageArticle(arr); 
+    });
+}

@@ -192,10 +192,11 @@ mapApp.prototype.adjustViewBox = function() {
 	document.documentElement.setAttributeNS(null,"viewBox","0 0 "+this.innerWidth+" "+this.innerHeight);
 }
 
-mapApp.prototype.calcCoord = function(evt,ctmNode) {
+mapApp.prototype.calcCoordTouch = function(evt,ctmNode) {
 	var svgPoint = svgEle.createSVGPoint();
-	svgPoint.x = evt.clientX;
-	svgPoint.y = evt.clientY;
+        var touch = evt.changedTouches.item(0);
+        svgPoint.x = touch.pageX;
+	svgPoint.y = touch.pageY;
 	if (!svgEle.getScreenCTM) {
 		//undo the effect of transformations
 		if (ctmNode) {
@@ -219,7 +220,33 @@ mapApp.prototype.calcCoord = function(evt,ctmNode) {
   //undo the effect of viewBox and zoomin/scroll
 	return svgPoint;
 }
-
+mapApp.prototype.calcCoord = function(evt,ctmNode) {
+	var svgPoint = svgEle.createSVGPoint();
+	svgPoint.x = evt.pageX;
+	svgPoint.y = evt.pageY;
+	if (!svgEle.getScreenCTM) {
+		//undo the effect of transformations
+		if (ctmNode) {
+			var matrix = getTransformToRootElement(ctmNode);
+		}
+		else {
+			var matrix = getTransformToRootElement(evt.target);			
+		}
+  		svgPoint = svgPoint.matrixTransform(matrix.inverse().multiply(this.m));
+	}
+	else {
+		//case getScreenCTM is available
+		if (ctmNode) {
+			var matrix = ctmNode.getScreenCTM();
+		}
+		else {
+			var matrix = evt.target.getScreenCTM();		
+		}
+  	svgPoint = svgPoint.matrixTransform(matrix.inverse());
+	}
+  //undo the effect of viewBox and zoomin/scroll
+	return svgPoint;
+}
 mapApp.prototype.calcInvCoord = function(svgPoint) {
 	if (!svgEle.getScreenCTM) {
 		var matrix = getTransformToRootElement(svgEle);

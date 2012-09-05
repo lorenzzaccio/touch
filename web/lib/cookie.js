@@ -142,6 +142,7 @@ function loadDefaultValue(type){
                         return unescape(y);
                     }
                 }
+                return 0;
             }
             
             function setCookie(c_name,value,exdays)
@@ -171,31 +172,40 @@ function loadDefaultValue(type){
             
             function recordLine(arrow){
                 var entry = {
-                //btn: arrow[BTN_HEADER],
-                index: parseInt(arrow[INDEX_HEADER]),
-                id: arrow[ID_HEADER],
-                x: parseInt(arrow[X_HEADER]),
-                y: parseInt(arrow[Y_HEADER]),
-                transx: parseInt(arrow[TRANSX_HEADER]),
-                transy:parseInt(arrow[TRANSY_HEADER]),
-                rotate:parseInt(arrow[ROTATE_HEADER]),
-                forme:arrow[FORME_HEADER],
-                width:parseInt(arrow[WIDTH_HEADER]),
-                height:parseInt(arrow[HEIGHT_HEADER]),
-                arg1:arrow[ARG1_HEADER],
-                arg2:arrow[ARG2_HEADER],
-                texte:arrow[TEXTE_HEADER],
-                fillcolor:arrow[FILLCOLOR_HEADER],
-                strokecolor:arrow[STROKECOLOR_HEADER],
-                type:arrow[TYPE_HEADER],
-                lieu:arrow[LIEU_HEADER],
-                view:arrow[VIEW_HEADER],
-                ware:arrow[WARE_HEADER],
-                quantity:parseInt(arrow[QUANTITE_HEADER]),
-                order:parseInt(arrow[ORDER_HEADER]),
-                sync:parseInt(arrow[SYNC_HEADER])
-            };
-            stock.storeAdd(entry);
+                    //btn: arrow[BTN_HEADER],
+                    index: parseInt(arrow[INDEX_HEADER]),
+                    id: arrow[ID_HEADER],
+                    x: parseInt(arrow[X_HEADER]),
+                    y: parseInt(arrow[Y_HEADER]),
+                    transx: parseInt(arrow[TRANSX_HEADER]),
+                    transy:parseInt(arrow[TRANSY_HEADER]),
+                    rotate:parseInt(arrow[ROTATE_HEADER]),
+                    forme:arrow[FORME_HEADER],
+                    width:parseInt(arrow[WIDTH_HEADER]),
+                    height:parseInt(arrow[HEIGHT_HEADER]),
+                    arg1:arrow[ARG1_HEADER],
+                    arg2:arrow[ARG2_HEADER],
+                    texte:arrow[TEXTE_HEADER],
+                    fillcolor:arrow[FILLCOLOR_HEADER],
+                    strokecolor:arrow[STROKECOLOR_HEADER],
+                    type:arrow[TYPE_HEADER],
+                    lieu:arrow[LIEU_HEADER],
+                    view:arrow[VIEW_HEADER],
+                    ware:arrow[WARE_HEADER],
+                    quantity:parseInt(arrow[QUANTITE_HEADER]),
+                    order:parseInt(arrow[ORDER_HEADER]),
+                    sync:parseInt(arrow[SYNC_HEADER])
+                };
+                stock.storeAdd(entry);
+            }
+            
+            function recordLineArticle(arrow){
+                var entry = {
+                    //index: parseInt(arrow[INDEX_HEADER]),
+                    prefix: arrow[0],
+                    article: parseInt(arrow[1])
+                };
+                article.storeAdd(entry);
             }
             
             function sendPhp(arrow){
@@ -335,5 +345,27 @@ function loadDefaultValue(type){
                 tabView[1] = zoomy;
                 tabView[2] = zoomw;
                 tabView[3] = zoomh;
+                tabView[4] = ratioZoom;
                 setCookie("viewbox",tabView,5);
             }
+            function readViewCookie(){
+                var tabView = [];
+                tabView = getCookie("viewbox");
+                if(!isNumber(tabView[0]) || !isNumber(tabView[1]) || !isNumber(tabView[2])|| !isNumber(tabView[3])|| !isNumber(tabView[4])){
+                    zoomx=0;
+                    zoomy=0;
+                    zoomw=840;
+                    zoomh=840;
+                    ratioZoom=1;
+                }else{
+                 zoomx=tabView[0];
+                 zoomy=tabView[1];
+                 zoomw=tabView[2];
+                 zoomh=tabView[3];
+                 ratioZoom=tabView[4];
+                }
+                
+            }
+            function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}

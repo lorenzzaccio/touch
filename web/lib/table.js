@@ -124,6 +124,7 @@
                 //sendPhp(lclArrow);
                 drawcaps();
             }
+            
             function syncLclStorage(arr){
                 var l = arr.length;
                 var i=0;
@@ -131,6 +132,15 @@
                     arrow = arr[i];
                     arrec[i] = arrow;
                     recordLine(arrow);
+                }
+            }
+            function syncLclStorageArticle(arr){
+                var l = arr.length;
+                var i=0;
+                for(i=0;i<l;i++){
+                    //arrow = arr[i];
+                    art_array[i] = arr[i];
+                    recordLineArticle(arr[i]);
                 }
             }
             /*

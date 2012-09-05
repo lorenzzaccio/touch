@@ -595,18 +595,7 @@ graphic.prototype.updateViewBox = function(){
                 svg.configure({viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh})
             }
 
-graphic.prototype.readViewCookie = function(){
-                var tab = [];
-                tab = getCookie("viewbox");
-                if (tab == undefined)
-                    return;
-                var tabView = tab.split(",");
-                zoomx = parseInt(tabView[0]);
-                zoomy = parseInt(tabView[1]);
-                zoomw = parseInt(tabView[2]);
-                zoomh = parseInt(tabView[3]);
-                this.updateViewBox();
-            }
+
             
 graphic.prototype.xcoord=function(cote,distBord,texte,police,couleur,taille,epaisseurTrait,a,r,ax,ay,fx,fy){
                 var alpha = (4-cote)*(a)/4;

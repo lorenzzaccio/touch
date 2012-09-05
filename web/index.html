@@ -5,22 +5,26 @@
         <link rel="stylesheet" href="./css/myStyle.css" type="text/css" />
         <link rel="stylesheet" href="./css/fd-slider.css" type="text/css" />
         <link href="./css/mcColorPicker.css" rel="stylesheet" type="text/css" />
+        <link type="text/css" href="jquery-ui-1.8.23.custom/css/ui-lightness/jquery-ui-1.8.23.custom.css" rel="stylesheet" />
         <title>Stock Manager</title>
-        <script type="text/javascript" src="jquery/jquery-1.7.2.js"></script>
-        <script type="text/javascript" src="jquery/jquery.svg.js"></script>
-        <script type="text/javascript" src="jquery/jquery.svgdom.js"></script>
-        <script type="text/javascript" src="lib/fontdetect.js"></script>
+        <!---->
+        <script type="text/javascript" src="jquery-ui-1.8.23.custom/js/jquery-1.8.0.min.js"></script>
+        <!--<script type="text/javascript" src="jquery-ui-1.8.23.custom/js/jquery-ui-1.8.23.custom.min.js"></script>-->
+        <script type="text/javascript" src="jquery.svg-1.4.5/jquery.svg.js"></script>
+        <script type="text/javascript" src="jquery.svg-1.4.5/jquery.svgdom.js"></script>
+        
+        <!--<script type="text/javascript" src="lib/fontdetect.js"></script>
         <script type="text/javascript" src="lib/combobox.js"></script>
         <script type="text/javascript" src="lib/textbox.js"></script>
         <script type="text/javascript" src="lib/slider.js"></script>
         <script type="text/javascript" src="lib/label.js"></script>
         <script type="text/javascript" src="lib/button.js"></script>
         <script type="text/javascript" src="lib/colourPicker.js"></script>
-        <script type="text/javascript" src="lib/mapApp.js"></script>
         <script type="text/javascript" src="lib/timer.js"></script>
+        <script type="text/javascript" src="lib/mapApp.js"></script>-->
         <script type="text/javascript" src="lib/guiCbk.js"></script>
         <script type="text/javascript" src="lib/util.js"></script>
-        <script type="text/javascript" src="lib/menu.js"></script>
+        <!--<script type="text/javascript" src="lib/menu.js"></script>-->
         <script type="text/javascript" src="lib/graphic.js"></script>
         <script type="text/javascript" src="lib/helper_functions.js"></script>
         <script type="text/javascript" src="lib/cookie.js"></script>
@@ -28,19 +32,25 @@
         <script type="text/javascript" src="lib/gui.js"></script>
         <script type="text/javascript" src="lib/forme.js"></script>
         <script type="text/javascript" src="lib/sql.js"></script>
-        <script type="text/javascript" src="lib/fd-slider.js"></script>
+        <script type="text/javascript" src="lib/stock.js"></script>
+        <script type="text/javascript" src="lib/article.js"></script>
+        <!--<script type="text/javascript" src="lib/fd-slider.js"></script>-->
         <script src="lib/mcColorPicker.js" type="text/javascript"></script> 
-        
+        <script src="lib/event.js" type="text/javascript"></script>
        
 
         <script type="text/javascript">
             //global vars
             var arrec = [];
-            var g;
+            var art_array = [];
+            var g_main;
             var selectedItem;
             var menuSvg;
             var globalVar;
             var myGraph;
+            //var myMapApp ;
+            var display;
+            var svgEle;
             //var objStock = new stock();
 
             $(function(){
@@ -49,25 +59,22 @@
             });
 
             function drawInitial() {
+                display = getDisplay(document,'mainMenu');
+                //myMapApp = new mapApp(display,false,undefined);
                 initEventHandler();
                 $('#svgbasics').svg('get').clear();
-                g = $('#svgbasics').svg('get').group({id: 'mainGroup'});
-                myGraph = new graphic(g,globalVar);
+                g_main = $('#svgbasics').svg('get').group({id: 'mainGroup'});
+                myGraph = new graphic(g_main,globalVar);
                 //initialize();
                 stock.init();
-                updateViewCookie();
-                initSlider();
+                article.init();
+                //stock.storeRemoveAll();
+                readViewCookie();
+                myGraph.updateViewBox();
+                populateCombo("artCombo");
                 activeView="ROOM";
             }
-            
-            function updateViewCookie(){
-                var tabView = [];
-                tabView[0] = zoomx;
-                tabView[1] = zoomy;
-                tabView[2] = zoomw;
-                tabView[3] = zoomh;
-                setCookie("viewbox",tabView,5);
-            }
+          
             function initSlider(){
                 $('input[min]').each(function() {
                 this.onchange = updateS;
@@ -89,7 +96,7 @@
             var step = 80;
             var zoomx = 0 ;
             var zoomy = 0 ;
-            var zoomh = 800;
+            var zoomh = 842;
             var zoomw = 842;
             function left(){
                 var svg = $('#svgbasics').svg('get');
@@ -118,11 +125,17 @@
             }
             
             function zoommoins(){
+                var mydiv = document.getElementById("svgbasics");
+                var curr_width = mydiv.offsetWidth;
+                var curr_height = mydiv.offsetHeight;
+                document.getElementById("verb1").value="width="+curr_width;
+                document.getElementById("verb2").value="height="+curr_height;
                 var svg = $('#svgbasics').svg('get');
-                
-                zoomw = zoomw  + step/ratioZoom;
-                zoomh = zoomh  + step/ratioZoom;
-                ratioZoom = zoomw/842;
+                //ratioZoom=2;
+                ratioZoom = ratioZoom/2;
+                //ratioZoom = zoom/zoomw;
+                zoomw = zoomw* 2;
+                zoomh = zoomh * 2;
                 var toto = document.getElementById("wheelvalue");
                 toto.value=ratioZoom; 
                 svg.configure({viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh})
@@ -130,10 +143,19 @@
             }
             
             function zoomplus(){
+                var mydiv = document.getElementById("svgbasics");
+                var curr_width = mydiv.offsetWidth;
+                var curr_height = mydiv.offsetHeight;
+                document.getElementById("verb1").value="width="+curr_width;
+                document.getElementById("verb2").value="height="+curr_height;
                 var svg = $('#svgbasics').svg('get');
-                zoomw = zoomw  - step/ratioZoom;
-                zoomh = zoomh  - step/ratioZoom;
-                ratioZoom = zoomw/842;
+                ratioZoom = ratioZoom*2;
+                //ratioZoom = zoom/zoomw;
+                zoomw = zoomw/ 2;
+                zoomh = zoomh / 2;
+                
+                var toto = document.getElementById("wheelvalue");
+                toto.value=ratioZoom; 
                 svg.configure({viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh})
                 updateViewCookie()
             }
@@ -143,10 +165,10 @@
                 var displayList = []; 
                 
                 $('#svgbasics').svg('get').clear();
-                g = $('#svgbasics').svg('get').group({id: 'mainGroup'});
+                g_main = $('#svgbasics').svg('get').group({id: 'mainGroup'});
                 if(activeView == "CARTON")
                     myGraph.drawPalette30();
-                
+                drawPalyRect();
                 var arrow = [];
                 var rowLength = 0;  
                 if(arrec==null)
@@ -231,94 +253,44 @@
             function syncS2MBtn(){
                 stock.storeRemoveAll();
                 syncS2MPhp();
-                //initArray();
-                //stock.init();
                 drawInitial();
                 setTimeout("drawcaps()", 800);
             }
-            
-            
-            
-            var stock = {
-    index: window.localStorage.getItem("stock:index"),
-
-    init: function() {
-        // initialize the storage index
-        if (!stock.index) {
-            window.localStorage.setItem("stock:index", stock.index = 1);
-        }
-
-        // initialize the form
-        
-
-        // initialize the table and populate it with data stored in web storage
-        if (window.localStorage.length - 1) {
-            var stock_list = [], i, key;
-            for (i = 0; i < window.localStorage.length; i++) {
-                key = window.localStorage.key(i);
-                if (/stock\d+/.test(key)) {
-                    stock_list.push(JSON.parse(window.localStorage.getItem(key)));
-                }
+            function syncS2MArticleBtn(){
+                article.storeRemoveAll();
+                syncS2MArticlePhp();
+                //drawInitial();
+                //setTimeout("drawcaps()", 800);
+            }
+            function add_option (select_id, text) {
+                var select = document.getElementById(select_id);
+                select.options[select.options.length] = new Option(text);
             }
 
-            if (stock_list.length) {
-                stock_list
-                    .sort(function(a, b) {
-                        return a.id < b.id ? -1 : (a.id > b.id ? 1 : 0);
-                    })
-                    .forEach(stock.tableAdd);
-            }
-        }
-        
-    },
-    storeAdd: function(entry) {
-        entry.index = stock.index;
-        window.localStorage.setItem("stock"+ entry.index, JSON.stringify(entry));
-        window.localStorage.setItem("stock:index", ++stock.index);
-        //console.log("new entry ...");
-    },
-    storeRead:function(entry){
-        
-    },
-    storeEdit: function(entry) {},
-    storeUpdate: function(entry) {
-        window.localStorage.setItem("stock"+ entry.index, JSON.stringify(entry));
-    },
-    storeRemoveAll: function(entry) {
-        var  key,j,i;
-        j=0;
-        
-        if (window.localStorage.length - 1) {
-            //for(i=0;i<100;i++){
+            function load_combo (select_id, option_array) {
                 
-            while(window.localStorage.length>0){
-            key = window.localStorage.key(i);
-                if (/stock+/.test(key)) {
-                    window.localStorage.removeItem(key);//(window.localStorage.getItem(key)));
+                for (var i = 0; i < option_array.length; i++) {
+                    //var tmp = option_array[i];
+                    //var val = tmp.split(",");
+                    add_option (select_id, option_array[i][0]+"-"+FormatNumberLength(option_array[i][1],8));
                 }
-            } 
-            if (stock.index) 
-                window.localStorage.setItem("stock:index", stock.index = 1);
-        }
-            
-    },
-
-    tableAdd: function(entry) {
-        var arrow  = [];
-        var  key,j;
-        j=0;
-        for (key in entry) {
-            if (entry.hasOwnProperty(key)) {
-                arrow[j] = entry[key];
-                j=j+1;
             }
-        }
-        arrec[entry.index-1] = arrow;
-    },
-    tableEdit: function(entry) {},
-    tableRemove: function(entry) {}
-    
-};
+            function populateCombo(comboName){
+                var arr = [];
+                arr = art_array;
+                load_combo(comboName,arr);
+            }
+            
+            function FormatNumberLength(num, length) {
+    var r = "" + num;
+    while (r.length < length) {
+        r = "0" + r;
+    }
+    return r;
+}
+
+            
+
 function createForm() { //document.getElementById("left_column").innerHTML = '<input type="button" id="cinput2" class="color" value="#00aa00" />'; 
 //<input type="text" id="cinput2" class="color" value="#00aa00" style="width:200px;height:50px"
  };
@@ -345,16 +317,26 @@ function setDesc(){
     }
     changeArrayRow(selectedRow,arrow);
 }
-function toggle2(showHideDiv, switchTextDiv) {
+function fillVal(){
+    var comb = document.getElementById("artCombo").value;
+    var mySplitResult = comb.split("-");
+     document.getElementById("prefix").value = mySplitResult[0];
+     document.getElementById("article").value = mySplitResult[1];
+     
+}
+function toggleMenu(){
+    toggle2('centermenu');
+}
+function toggle2(showHideDiv) {
 	var ele = document.getElementById(showHideDiv);
-	var text = document.getElementById(switchTextDiv);
+	//var text = document.getElementById(switchTextDiv);
 	if(ele.style.display == "block") {
     		ele.style.display = "none";
-		text.innerHTML = "restore";
+		//text.innerHTML = ">-<";
   	}
 	else {
 		ele.style.display = "block";
-		text.innerHTML = "collapse";
+		//text.innerHTML = "<->";
 	}
 }
 
@@ -370,106 +352,77 @@ function toggleVuePaletteMenu(){
         
     </head>
     <body>
+        
+
        <div id="page_container">
-            <div id="header">
-                <h1>Stock Manager</h1>
-            </div>
-            <div id="headerDiv">
-            <div id="titleText">Hide/Show Div Demo - Click here ==></div><a id="myHeader" href="javascript:toggle2('centermenu','myHeader');" >collapse</a>
-            </div>
-           <INPUT TYPE=button id ="vuePalette" style="width:100px;height:50px" VALUE="vue palette" onClick="vuePaletteBtnPressed()">
-            <INPUT TYPE=button id ="vueCarton" style="width:100px;height:50px" VALUE="vue carton" onClick="vueCartonBtnPressed()" disabled>
-            <div style="clear:both;"></div>
-            <div id="contentDiv">
-                <div id="descrip_palette" style="display: block;">
-                    <INPUT TYPE=text id ="textePalette" style="width:200px;height:50px" VALUE="desc palette" >
-                    <INPUT TYPE=text id ="nbrCarton" style="width:60px;height:50px" VALUE="12" >
+            <div id="floating_bar" class="menuBar">
+             <!--<div class="nav"> 
+                <ul id="list-nav">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Products</a></li>
+                <li><a href="#">Contact</a></li>
+                </ul>
+             </div>-->
+                
+                <div id="menu_produit">
+                 <div id="descrip_palette" class="desc" style="display: block;">
+                    <INPUT TYPE=text id ="textePalette" style="width:200px;height:40px" VALUE="desc palette" >
+                    <INPUT TYPE=text id ="nbrCarton" style="width:60px;height:40px" VALUE="12" >
                     <INPUT TYPE=button id ="descBtn" style="width:60px;height:50px" VALUE="OK" onClick="setDesc()">
-                    <input type="button" id="cinput2" class="color" value="#00aa00" style="width:100px;height:60px;display:all" onClick="setHexColor(value)" />
+                    <INPUT TYPE=button id="cinput2" class="color" VALUE="#00aa00" style="width:100px;height:50px;display:all" onClick="setHexColor(value)" />
                     <INPUT TYPE=button id ="addBtn" style="width:200px;height:50px" VALUE="ajouter palette" onClick="addProductBtn()">
                     <INPUT TYPE=button id ="rotate" style="width:60px;height:50px" VALUE="rotation" onClick="rotate()">
                 </div>
-                <div id="descrip_carton" style="display: none;">
-                    <INPUT TYPE=text id ="prefix" style="width:60px;height:50px" VALUE="C10" >
-                    <INPUT TYPE=text id ="article" style="width:60px;height:50px" VALUE="02000127" >
-                    <INPUT TYPE=text id ="nbrCoiffes" style="width:60px;height:50px" VALUE="2500" >
+                <div id="descrip_carton" class="desc" style="display: none;">
+                    <select id="artCombo" size="1" STYLE="font-family : arial; font-size : 12pt" onClick="fillVal()"></select>
+                    <INPUT TYPE=text id ="prefix" style="width:60px;height:40px" VALUE="C10" >
+                    <INPUT TYPE=text id ="article" style="width:60px;height:40px" VALUE="02000127" >
+                    <INPUT TYPE=text id ="nbrCoiffes" style="width:60px;height:40px" VALUE="2500" >
                     <INPUT TYPE=button id ="descBtn" style="width:60px;height:50px" VALUE="OK" onClick="setDesc()">
-                    <input type="button" id="cinput2" class="color" value="#00aa00" style="width:100px;height:60px;display:all" onClick="setHexColor(value)" />
+                    <INPUT TYPE="button" id="cinput2" class="color" VALUE="#00aa00" style="width:100px;height:50px;display:all" onClick="setHexColor(value)" />
                     <INPUT TYPE=button id ="addBtn" style="width:200px;height:50px" VALUE="ajouter palette" onClick="addProductBtn()">
-                        <INPUT TYPE=button id ="rotate" style="width:60px;height:50px" VALUE="rotation" onClick="rotate()">
+                    <INPUT TYPE=button id ="rotate" style="width:60px;height:50px" VALUE="rotation" onClick="rotate()">
+                </div>
+                    
                 </div>
                 
+        </div>
+            
+           
                 
+            <div style="clear:both;"></div>
+            <div id="contentDiv">
                 
             
-            <div id="centermenu" style="display: block;">
+            <div id="centermenu" style="display: none;">
                 <INPUT TYPE=button id ="getClient" style="width:100px;height:50px" VALUE="requête" onClick="ajaxFunction()">
                 <INPUT TYPE=button id ="removeAll" style="width:100px;height:50px" VALUE="clean" onClick="removeLclDb()">
                 <INPUT TYPE=button id ="update" style="width:100px;height:50px" VALUE="update" onClick="updateBtn()">
                 <INPUT TYPE=button id ="syncM2S" style="width:100px;height:50px" VALUE="sync M2S" onClick="syncM2SBtn()">
                 <INPUT TYPE=button id ="syncS2M" style="width:100px;height:50px" VALUE="sync S2M" onClick="syncS2MBtn()">
-                <INPUT TYPE=button id ="zoomplus" style="width:60px;height:50px" VALUE="zoom +" onClick="zoomplus()">
-                <INPUT TYPE=button id ="zoommoins" style="width:60px;height:50px" VALUE="zoom -" onClick="zoommoins()">
-                <INPUT TYPE=text id ="wheelvalue" style="width:60px;height:50px" VALUE="0" >
+                <INPUT TYPE=button id ="syncArticle" style="width:100px;height:50px" VALUE="sync Article" onClick="syncS2MArticleBtn()">
+                
                 <INPUT TYPE=text id ="xoff" style="width:60px;height:50px" VALUE="-80" >
                 <INPUT TYPE=text id ="yoff" style="width:60px;height:50px" VALUE="-320" >
-                <INPUT TYPE=text id ="verb1" style="width:150px;height:50px" VALUE="0" >
-                <INPUT TYPE=text id ="verb2" style="width:150px;height:50px" VALUE="0" >
-                <INPUT TYPE=text id ="verb3" style="width:150px;height:50px" VALUE="0" >
-                <INPUT TYPE=text id ="verb4" style="width:150px;height:50px" VALUE="0" >
-                <INPUT TYPE=text id ="verb5" style="width:150px;height:50px" VALUE="0" >
+                <INPUT TYPE=text id ="verb1" style="width:150px;height:30px" VALUE="0" >
+                <INPUT TYPE=text id ="verb2" style="width:150px;height:30px" VALUE="0" >
+                <INPUT TYPE=text id ="verb3" style="width:150px;height:30px" VALUE="0" >
+                <INPUT TYPE=text id ="verb4" style="width:150px;height:30px" VALUE="0" >
+                <INPUT TYPE=text id ="verb5" style="width:150px;height:30px" VALUE="0" >
              </div>
-                 <div id="prebar" style="display: block;">
-                 </div>
-                <div id="bar" style="display: block;">
-                <input TYPE=text name="lines" style="alignment-adjust: middle" min="0" max="10" step="0.5" value="0">
-                </div>
-                <div id="afterbar" style="display: block;">
-                 </div>
+                            
+
+   
+                
+
             </div>
             <div id="svgrow">
                 <div id="svgbasics" class="no-copy"></div>
-                <div id="svgmenu" >
-                        <svg id="mainMenu"  viewBox="0 0 1024 768" width="100%" height="100%"  xmlns:xlink="http://www.w3.org/1999/xlink" onload="initialize()" zoomAndPan="disable" xml:space="preserve">	
-                            <g id="mainBackground"/>
-                            <defs>
-                            <!-- Symbol for Slider -->
-                            <symbol id="sliderSymbol" overflow="visible">
-                                <line x1="0" y1="-40" x2="0" y2="40" stroke="green" stroke-width="50" pointer-events="none"/>
-                            </symbol>
-                            <symbol id="sliderSymbolCp" overflow="visible">
-                                <line x1="0" y1="-40" x2="0" y2="40" stroke="gray" stroke-width="20" pointer-events="none"/>
-                            </symbol>
-                            
-                        </defs>
-                            <defs>
-                                <symbol id="vertsliderSymbol" overflow="visible">
-                                <line x1="0" y1="-30" x2="0" y2="30" stroke="red" stroke-width="25" pointer-events="none"/>
-                            </symbol>
-                            </defs>
-                            <defs>
-                                <symbol id="horisliderSymbol" overflow="visible">
-                                <line x1="0" y1="-30" x2="0" y2="30" stroke="red" stroke-width="25" pointer-events="none"/>
-                            </symbol>
-                            </defs>
-                            <text id="resultText" x="100" y="530" xml:space="preserve">ResultText</text>	
-                            <g id="combo1"/>
-                            <g id="textbox2"/>
-                            <g id="textbox3"/>
-                            <g id="zoomslider" />
-                            <g id="vertslider" />
-                            <g id="horislider" />
-                            <g id="textbuttons"/>
-                            <g id="colourPickers" />
-                            
-                        </svg>
-                </div>
-            </div>
-            <div id ="right_column">
                 
             </div>
-            
-            <div id="footer"></div>
+
             
             <div id="log" style="display:none;">
                 <input type="text" name="txtarea" />
@@ -478,6 +431,24 @@ function toggleVuePaletteMenu(){
             
             <div id="msg"></div>
             
+        </div>
+        
+        <div id="floating_bar" class="footerBar">
+            <div id="header"><h1>Stock Manager</h1></div>
+            <div id="titleText" style="display: block;">
+            
+            
+            </div>
+                <div id="right_column">
+                 <div id="floating_menu" style="display: block;">
+                    <INPUT TYPE=button id ="zoomplus" style="width:60px;height:50px" VALUE="zoom +" onClick="zoomplus()">
+                    <INPUT TYPE=text id ="wheelvalue" style="width:60px;height:40px" VALUE="0" >
+                    <INPUT TYPE=button id ="zoommoins" style="width:60px;height:50px" VALUE="zoom -" onClick="zoommoins()">
+                    <INPUT TYPE=button id ="vuePalette" style="width:100px;height:50px" VALUE="vue palette" onClick="vuePaletteBtnPressed()" disabled>
+                    <INPUT TYPE=button id ="vueCarton" style="width:100px;height:50px" VALUE="vue carton" onClick="vueCartonBtnPressed()" disabled>
+                    <INPUT TYPE=button id ="myHeader" style="width:60px;height:50px" VALUE="Menu" onClick="toggleMenu()">
+                 </div> 
+                </div>
         </div>
         
     </body>
