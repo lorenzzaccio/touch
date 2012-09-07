@@ -61,13 +61,29 @@ function addPalette(){
 function addProductBtn(){
     if(activeView=="ROOM")
         addPalette();
-    else
-        addCaisse();
+    else{
+            addCaisse();
+    }
 }
 function addCaisse(){
     var index =  window.localStorage.getItem("stock:index");
     var id = "cai_"+index;
     addNewRowCaisse("caisse25","g"+id,ID_HEADER,index,selectedPalette);
+}
+function addCaisseRow(arrow){
+    var index =  window.localStorage.getItem("stock:index");
+    var tmpArrow;
+    var i=0;
+    var alloc_index=1;
+    for(i=0;i<index-1;i++){
+        tmpArrow = arrec[i];
+        if(alloc_index==tmpArrow[INDEX_HEADER]){
+            alloc_index++;
+            i=-1;
+        }
+    }
+    var id = "cai_"+alloc_index;
+    addNewRowCaisseRow("caisse25","g"+id,ID_HEADER,index,selectedPalette,arrow);
 }
 function vuePaletteBtnPressed(){
     activeView="ROOM";

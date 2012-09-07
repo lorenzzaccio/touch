@@ -7,7 +7,7 @@
 function initEventHandler(){
     
     if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
-        ratioZoom=1;
+        //ratioZoom=1;
         
         document.addEventListener('touchmove', function(event) {
             event.preventDefault();
@@ -30,7 +30,7 @@ function initEventHandler(){
             gestureEnd(event);
         }, false);
     }else{
-        ratioZoom=1;
+        //ratioZoom=1;
         $("svg").bind('mousedown',mouseDown);
         $("svg").bind("mouseup", mouseUp);
         $("svg").bind("mousemove", mouseMove);
@@ -147,7 +147,7 @@ function mouseMove(e){
         zoomy =  parseInt(dy_back);
         svg.configure({
             viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh
-        })        
+        });        
     }else{
         back_drag=0;
     }
@@ -193,7 +193,7 @@ function tmouseMove(e){
         zoomy =  parseInt(dy_back);
         svg.configure({
             viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh
-        })        
+        });        
     }else{
         back_drag=0;
     }
@@ -233,6 +233,7 @@ function tmouseDown(e){
         var item = id;
         selectedIndex = getRowNumArrec(item,ID_HEADER);
         selectedRow = selectedIndex;
+        selArr = arrec[selectedRow];
         document.getElementById("verb3").value="row="+selectedRow;
         $(previousSelectedItem.firstChild).attr('stroke','black'); 
         $(selectedItem.firstChild).attr('stroke','red'); 
@@ -319,6 +320,7 @@ function mouseDown(e){
             transx = arrow[TRANSX_HEADER];
             transy = arrow[TRANSY_HEADER];
             selectedRow = selectedIndex;
+            
         }
         
         
@@ -347,6 +349,7 @@ function mouseDown(e){
             btnCarton.disabled=false;
         }
         var item = selectedItem.getAttributeNS(null,"id");
+        selArr = arrec[selectedRow];
     }else{
         start_drag = 0;
         if ((start_drag==0)&&(itemFocused==1)){
@@ -362,8 +365,10 @@ function mouseDown(e){
 }
             
 function mouseUp(e){
-    back_drag=0;
-    
+    if(back_drag==1){
+        back_drag=0;
+        updateViewCookie();
+    }
     if((start_drag) &&(bDragging)){
         var arrow = arrec[selectedRow];
         arrow[TRANSX_HEADER]=dx;//*ratioZoom;
@@ -421,7 +426,7 @@ function gestureChange(event) {
     var node = event.target;
 			
     // scale
-    var newWidth = width * event.scale;
+    /*var newWidth = width * event.scale;
     var newHeight = height * event.scale;
 			
     var newX = x - (newWidth - width)/2;
@@ -430,7 +435,7 @@ function gestureChange(event) {
     node.setAttributeNS(null, 'width', newWidth);
     node.setAttributeNS(null, 'height', newHeight);
     node.setAttributeNS(null, 'x', newX);
-    node.setAttributeNS(null, 'y', newY);
+    node.setAttributeNS(null, 'y', newY);*/
     /*
      *var mydiv = document.getElementById("svgbasics");
     var curr_width = mydiv.offsetWidth;
@@ -441,15 +446,30 @@ function gestureChange(event) {
     svg.configure({viewBox: newX+' '+newY+' '+newWidth+' '+newHeight});
     updateViewCookie();
     */
+   
+   var newWidth = width / event.scale;
+    var newHeight = height / event.scale;
+    //dx_back = (mouseX-x_ori_back);//ratioZoom;
+    //dy_back = (mouseY-y_ori_back);//ratioZoom;  
+    document.getElementById("verb3").value="y="+dx_back;
+    var svg = $('#svgbasics').svg('get');
+    zoomw =  parseInt(newWidth);
+    zoomh =  parseInt(newHeight);
+    svg.configure({
+        viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh
+    });  
+/*    
     // rotation
     var newRotation = rotation + event.rotation;
     var centerX = newX + newWidth/2;
     var centerY = newY + newHeight/2;
     setRotation(node, newRotation, centerX, centerY);
+    */
 }
 		
 function gestureEnd(event) {
     rotation = rotation + event.rotation;
+    updateViewCookie();
 }
 		
 function setRotation(node, rotation, x, y) {

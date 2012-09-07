@@ -83,7 +83,7 @@
                 arrow = loadDefaultValue(type);
                 insertRow(arrow,tableId,drawcaps);
                 var nbrRow = document.getElementById(tableId).rows.length -1;//-2 si il y a le header
-                setCookie(COOKIE_NAME+nbrRow,arrow,5);
+                //setCookie(COOKIE_NAME+nbrRow,arrow,5);
                 drawcaps();
             }
             
@@ -93,9 +93,9 @@
                 arrow[col]=id;
                 insertRow(arrow,tableId,drawcaps);
                 //var nbrRow = document.getElementById(tableId).rows.length -1;//-2 si il y a le header
-                var index = id.split("_");
-                var selIndex = index[1];
-                setCookie(COOKIE_NAME+selIndex,arrow,5);
+                //var index = id.split("_");
+                //var selIndex = index[1];
+                //setCookie(COOKIE_NAME+selIndex,arrow,5);
                 drawcaps();
             }
             function addNewRowPalette(type,id,col,selIndex){
@@ -105,7 +105,7 @@
                 lclArrow[INDEX_HEADER]=selIndex;
                 var l = arrec.length;
                 arrec[l] = lclArrow;
-                setCookie(COOKIE_NAME+selIndex,lclArrow,5);
+                //setCookie(COOKIE_NAME+selIndex,lclArrow,5);
                 recordLine(lclArrow);
                 //sendPhp(lclArrow);
                 drawcaps();
@@ -119,7 +119,20 @@
                 lclArrow[VIEW_HEADER]=parent;
                 var l = arrec.length;
                 arrec[l] = lclArrow;
-                setCookie(COOKIE_NAME+selIndex,lclArrow,5);
+                //setCookie(COOKIE_NAME+selIndex,lclArrow,5);
+                recordLine(lclArrow);
+                //sendPhp(lclArrow);
+                drawcaps();
+            }
+            function addNewRowCaisseRow(type,id,col,selIndex,parent,row){
+                //var lclArrow = new Array(COL_NUMBER);
+                var lclArrow = row;//loadDefaultValue(type);
+                lclArrow[col]=id;
+                lclArrow[INDEX_HEADER]=selIndex;
+                lclArrow[VIEW_HEADER]=parent;
+                //var l = arrec.length;
+                //arrec[l] = lclArrow;
+                //setCookie(COOKIE_NAME+selIndex,lclArrow,5);
                 recordLine(lclArrow);
                 //sendPhp(lclArrow);
                 drawcaps();
@@ -262,8 +275,8 @@
             }
             function changeArrayRow(row,arrow)
             {
-                var num = arrow[INDEX_HEADER];
-                setCookie(COOKIE_NAME+(num),arrow,5);
+                //var num = arrow[INDEX_HEADER];
+                //setCookie(COOKIE_NAME+(num),arrow,5);
                 updateLine(arrow);
             }
             function updateTransValues(row,arrow,index)
@@ -278,7 +291,7 @@
                 var arrow = arrec[row];
                 var num = arrow[INDEX_HEADER];
                 arrow[col] = newValue;
-                setCookie(COOKIE_NAME+(num),arrow,5);
+                //setCookie(COOKIE_NAME+(num),arrow,5);
                 updateLine(arrow);
             }
             

@@ -3,8 +3,8 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <link rel="stylesheet" href="./css/myStyle.css" type="text/css" />
-        <link rel="stylesheet" href="./css/fd-slider.css" type="text/css" />
-        <link href="./css/mcColorPicker.css" rel="stylesheet" type="text/css" />
+        <!--<link rel="stylesheet" href="./css/fd-slider.css" type="text/css" />
+        <link href="./css/mcColorPicker.css" rel="stylesheet" type="text/css" />-->
         <link type="text/css" href="jquery-ui-1.8.23.custom/css/ui-lightness/jquery-ui-1.8.23.custom.css" rel="stylesheet" />
         <title>Stock Manager</title>
         <!---->
@@ -12,7 +12,7 @@
         <!--<script type="text/javascript" src="jquery-ui-1.8.23.custom/js/jquery-ui-1.8.23.custom.min.js"></script>-->
         <script type="text/javascript" src="jquery.svg-1.4.5/jquery.svg.js"></script>
         <script type="text/javascript" src="jquery.svg-1.4.5/jquery.svgdom.js"></script>
-        
+
         <!--<script type="text/javascript" src="lib/fontdetect.js"></script>
         <script type="text/javascript" src="lib/combobox.js"></script>
         <script type="text/javascript" src="lib/textbox.js"></script>
@@ -35,13 +35,18 @@
         <script type="text/javascript" src="lib/stock.js"></script>
         <script type="text/javascript" src="lib/article.js"></script>
         <!--<script type="text/javascript" src="lib/fd-slider.js"></script>-->
-        <script src="lib/mcColorPicker.js" type="text/javascript"></script> 
+        <!--<script src="lib/mcColorPicker.js" type="text/javascript"></script> -->
         <script src="lib/event.js" type="text/javascript"></script>
-       
+        <script type="text/javascript" src="jscolor/jscolor.js"></script>
+        <!--<script type="text/javascript" src="color/farbtastic.js"></script>-->
+        <link rel="stylesheet" href="color/farbtastic.css" type="text/css" /> 
+
 
         <script type="text/javascript">
             //global vars
             var arrec = [];
+            var arrec_index = 0;
+            var selArr = [];
             var art_array = [];
             var g_main;
             var selectedItem;
@@ -51,6 +56,13 @@
             //var myMapApp ;
             var display;
             var svgEle;
+            var screenW=0;
+            var screenH=0;
+            var step = 80;
+            var zoomx = 0 ;
+            var zoomy = 0 ;
+            var zoomh = 0;
+            var zoomw = 0;
             //var objStock = new stock();
 
             $(function(){
@@ -61,6 +73,7 @@
             function drawInitial() {
                 display = getDisplay(document,'mainMenu');
                 //myMapApp = new mapApp(display,false,undefined);
+                //$('#colorpicker').farbtastic('#color');
                 initEventHandler();
                 $('#svgbasics').svg('get').clear();
                 g_main = $('#svgbasics').svg('get').group({id: 'mainGroup'});
@@ -69,15 +82,43 @@
                 stock.init();
                 article.init();
                 //stock.storeRemoveAll();
-                readViewCookie();
-                myGraph.updateViewBox();
+                
                 populateCombo("artCombo");
                 activeView="ROOM";
+                var mydiv = document.getElementById("svgbasics");
+                screenW = mydiv.offsetWidth;
+                screenH = mydiv.offsetHeight;
+                zoomx = 0 ;
+                zoomy = 0 ;
+                zoomh = screenH;
+                zoomw = screenW;
+                refresh();
+                document.getElementById("verb1").value="width="+screenW;
+                document.getElementById("verb2").value="height="+screenH;
+                readViewCookie();
+                ratioZoom = zoomh/screenH;
+                document.getElementById("wheelvalue").value=ratioZoom;
+                myGraph.updateViewBox();
             }
-          
+            function refresh(){
+                activeView="ROOM";
+                var mydiv = document.getElementById("svgbasics");
+                screenW = mydiv.offsetWidth;
+                screenH = mydiv.offsetHeight;
+                zoomx = 0 ;
+                zoomy = 0 ;
+                zoomh = screenH;
+                zoomw = screenW;
+                ratioZoom = 1;
+                document.getElementById("wheelvalue").value=ratioZoom;
+                myGraph.updateViewBox();
+                updateViewCookie();
+                drawcaps();
+                
+            }
             function initSlider(){
                 $('input[min]').each(function() {
-                this.onchange = updateS;
+                    this.onchange = updateS;
                 }); 
             }
             
@@ -87,17 +128,13 @@
                 zoomx = 100 * val;
                 //zoomw = 842*val;//  + step/ratioZoom;
                 //zoomh = val*842;//  + step/ratioZoom;
-                ratioZoom = zoomw/842;
+                ratioZoom = zoomw/screenW;
                 var toto = document.getElementById("wheelvalue");
                 toto.value=ratioZoom; 
                 svg.configure({viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh})
                 updateViewCookie()
             }
-            var step = 80;
-            var zoomx = 0 ;
-            var zoomy = 0 ;
-            var zoomh = 842;
-            var zoomw = 842;
+            
             function left(){
                 var svg = $('#svgbasics').svg('get');
                 zoomx = zoomx + step/ratioZoom;
@@ -114,22 +151,22 @@
                 var svg = $('#svgbasics').svg('get');
                 zoomy = zoomy  - step/ratioZoom;
                 svg.configure({viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh})
-                updateViewCookie()
+                updateViewCookie();
             }
             
             function up(){
                 var svg = $('#svgbasics').svg('get');
                 zoomy = zoomy  + step/ratioZoom;
                 svg.configure({viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh})
-                updateViewCookie()
+                updateViewCookie();
             }
             
             function zoommoins(){
-                var mydiv = document.getElementById("svgbasics");
+                /*var mydiv = document.getElementById("svgbasics");
                 var curr_width = mydiv.offsetWidth;
                 var curr_height = mydiv.offsetHeight;
                 document.getElementById("verb1").value="width="+curr_width;
-                document.getElementById("verb2").value="height="+curr_height;
+                document.getElementById("verb2").value="height="+curr_height;*/
                 var svg = $('#svgbasics').svg('get');
                 //ratioZoom=2;
                 ratioZoom = ratioZoom/2;
@@ -143,11 +180,11 @@
             }
             
             function zoomplus(){
-                var mydiv = document.getElementById("svgbasics");
+                /*var mydiv = document.getElementById("svgbasics");
                 var curr_width = mydiv.offsetWidth;
                 var curr_height = mydiv.offsetHeight;
                 document.getElementById("verb1").value="width="+curr_width;
-                document.getElementById("verb2").value="height="+curr_height;
+                document.getElementById("verb2").value="height="+curr_height;*/
                 var svg = $('#svgbasics').svg('get');
                 ratioZoom = ratioZoom*2;
                 //ratioZoom = zoom/zoomw;
@@ -193,35 +230,12 @@
                                     filter=selectedPalette;
                                 
                                 if((arrow[FORME_HEADER] == "rectangle")&&(arrow[VIEW_HEADER]==filter)){
-                                    var id = arrow[ID_HEADER];//posx
-                                    var x = arrow[X_HEADER];//posx
-                                    var y = arrow[Y_HEADER];//posy
-                                    var height = arrow[HEIGHT_HEADER];//posy
-                                    var width = arrow[WIDTH_HEADER];//posy
-                                    var transx = arrow[TRANSX_HEADER];//transx
-                                    var transy = arrow[TRANSY_HEADER];//transy
-                                    var rotate = arrow[ROTATE_HEADER];
-                                    var texte = arrow[TEXTE_HEADER];//texte
-                                    var arg1 = arrow[ARG1_HEADER];
-                                    var arg2 = arrow[ARG2_HEADER];
-                                    var fillColor = arrow[FILLCOLOR_HEADER];//color
-                                    var strokeColor = arrow[STROKECOLOR_HEADER];//stroke color
-                                    var quantite = arrow[QUANTITE_HEADER];//quantity
+                                    insertRect(arrow);
                                     
-                                    var group = drawRect(arrow);
-                                    if(activeView=="ROOM"){
-                                        drawText(group,id,strokeColor,texte,0,x-(-5),y-(-height),rotate);
-                                        drawText(group,id,strokeColor,quantite.toString() ,1,x-(-5),y-(-height),rotate);
-                                    }
-                                    if (activeView=="CARTON"){
-                                        drawText(group,id,strokeColor,arg1+"-"+arg2,0,x-(-5),y-(-height),rotate);
-                                        drawText(group,id,strokeColor,quantite.toString() ,1,x-(-5),y-(-height),rotate);
-                                    }
-                                    
-                                    }
-                          }
+                                }
+                            }
                         }
-                      }
+                    }
                     
                     for(var j = 0 ; j< rowLength;j++){
                         //arrow= readRow(tableId,j);
@@ -231,6 +245,79 @@
                     //alert("tbl is null");
                 }
                 
+            }
+            
+            function insertRect(arrow){
+                var id = arrow[ID_HEADER];//posx
+                var x = arrow[X_HEADER];//posx
+                var y = arrow[Y_HEADER];//posy
+                var height = arrow[HEIGHT_HEADER];//posy
+                var width = arrow[WIDTH_HEADER];//posy
+                var transx = arrow[TRANSX_HEADER];//transx
+                var transy = arrow[TRANSY_HEADER];//transy
+                var rotate = arrow[ROTATE_HEADER];
+                var texte = arrow[TEXTE_HEADER];//texte
+                var arg1 = arrow[ARG1_HEADER];
+                var arg2 = arrow[ARG2_HEADER];
+                var fillColor = arrow[FILLCOLOR_HEADER];//color
+                var strokeColor = arrow[STROKECOLOR_HEADER];//stroke color
+                var quantite = arrow[QUANTITE_HEADER];//quantity
+                                    
+                var group = drawRect(arrow);
+                if(activeView=="ROOM"){
+                    drawText(group,id,strokeColor,texte,0,x-(-5),y-(-height),rotate);
+                    drawText(group,id,strokeColor,quantite.toString() ,1,x-(-5),y-(-height),rotate);
+                }
+                if (activeView=="CARTON"){
+                    drawText(group,id,strokeColor,arg1+"-"+arg2,0,x-(-5),y-(-height),rotate);
+                    drawText(group,id,strokeColor,quantite.toString() ,1,x-(-5),y-(-height),rotate);
+                }
+            }
+            
+            function copyBtn(){
+                var selectArr = arrec[selectedRow];
+                var tmpArr = loadDefaultValue(selectArr[TYPE_HEADER]);
+                var j;
+                for(j=0;j<selectArr.length;j++)
+                    tmpArr[j]=selectArr[j];
+                var index =  window.localStorage.getItem("stock:index");
+                var tmpArrow;
+                var i=0;
+                var alloc_index=1;
+                for(i=0;i<index-1;i++){
+                    tmpArrow = arrec[i];
+                    if(alloc_index==tmpArrow[INDEX_HEADER]){
+                        alloc_index++;
+                        i=-1;
+                    }
+                }
+                var id = "gcai_"+alloc_index;
+                tmpArr[ID_HEADER]=id;
+                tmpArr[INDEX_HEADER]=stock.getLength();
+                tmpArr[TRANSX_HEADER] = 0;
+                tmpArr[TRANSY_HEADER] = 0;
+                recordLine(tmpArr);
+                arrec=null;
+                arrec=[]
+                stock.init();
+                insertRect(tmpArr);
+                
+                
+                /*var l = arrec.length;
+                arrec[l] =: 
+                
+                
+                 var arrow = arrec[l];
+                
+                arrow[X_HEADER] = 20;
+                arrow[Y_HEADER] = 20;
+                arrow[TRANSX_HEADER] = 0;
+                arrow[TRANSY_HEADER] = 0;
+                if(activeView=="ROOM")
+                    addPalette();
+                else
+                    addCaisseRow(arrow);*/
+            
             }
             
             function removeLclDb(){
@@ -282,174 +369,210 @@
             }
             
             function FormatNumberLength(num, length) {
-    var r = "" + num;
-    while (r.length < length) {
-        r = "0" + r;
-    }
-    return r;
-}
+                var r = "" + num;
+                while (r.length < length) {
+                    r = "0" + r;
+                }
+                return r;
+            }
 
             
 
-function createForm() { //document.getElementById("left_column").innerHTML = '<input type="button" id="cinput2" class="color" value="#00aa00" />'; 
-//<input type="text" id="cinput2" class="color" value="#00aa00" style="width:200px;height:50px"
- };
-function OnColorChanged(selectedColor, colorPickerIndex) { 
-    /*var divA = document.getElementById("divA"); 
+            function createForm() { //document.getElementById("left_column").innerHTML = '<input type="button" id="cinput2" class="color" value="#00aa00" />'; 
+                //<input type="text" id="cinput2" class="color" value="#00aa00" style="width:200px;height:50px"
+            };
+            function OnColorChanged(selectedColor, colorPickerIndex) { 
+                /*var divA = document.getElementById("divA"); 
     var divB = document.getElementById("divB"); 
     if (colorPickerIndex==0) 
         divA.style.color = selectedColor; 
     else 
         if (colorPickerIndex==1) 
             divB.style.color = selectedColor; */
-        //alert(selectedColor);
-        setColor(selectedColor);
-}   
-function setDesc(){
-    var arrow = arrec[selectedRow];
-    if(activeView=="ROOM"){
-    arrow[TEXTE_HEADER] = document.getElementById("textePalette").value;
-    }
-    if(activeView=="CARTON"){
-        arrow[ARG1_HEADER] = document.getElementById("prefix").value;
-        arrow[ARG2_HEADER] = document.getElementById("article").value;
-        arrow[QUANTITE_HEADER] = document.getElementById("nbrCoiffes").value;
-    }
-    changeArrayRow(selectedRow,arrow);
-}
-function fillVal(){
-    var comb = document.getElementById("artCombo").value;
-    var mySplitResult = comb.split("-");
-     document.getElementById("prefix").value = mySplitResult[0];
-     document.getElementById("article").value = mySplitResult[1];
+                //alert(selectedColor);
+                setColor(selectedColor);
+            }   
+            function setDesc(){
+                var arrow = arrec[selectedRow];
+                if(activeView=="ROOM"){
+                    arrow[TEXTE_HEADER] = document.getElementById("textePalette").value;
+                    selArr[TEXTE_HEADER] = document.getElementById("textePalette").value;
+                }
+                if(activeView=="CARTON"){
+                    arrow[ARG1_HEADER] = document.getElementById("prefix").value;
+                    arrow[ARG2_HEADER] = document.getElementById("article").value;
+                    arrow[QUANTITE_HEADER] = document.getElementById("nbrCoiffes").value;
+                    
+                }
+                changeArrayRow(selectedRow,arrow);
+                
+            }
+            function fillVal(){
+                var comb = document.getElementById("artCombo").value;
+                var mySplitResult = comb.split("-");
+                document.getElementById("prefix").value = mySplitResult[0];
+                document.getElementById("article").value = mySplitResult[1];
      
-}
-function toggleMenu(){
-    toggle2('centermenu');
-}
-function toggle2(showHideDiv) {
-	var ele = document.getElementById(showHideDiv);
-	//var text = document.getElementById(switchTextDiv);
-	if(ele.style.display == "block") {
-    		ele.style.display = "none";
-		//text.innerHTML = ">-<";
-  	}
-	else {
-		ele.style.display = "block";
-		//text.innerHTML = "<->";
-	}
-}
+            }
+            function toggleMenu(){
+                toggle2('centermenu');
+            }
+            function toggle2(showHideDiv) {
+                var ele = document.getElementById(showHideDiv);
+                //var text = document.getElementById(switchTextDiv);
+                if(ele.style.display == "block") {
+                    ele.style.display = "none";
+                    //text.innerHTML = ">-<";
+                }
+                else {
+                    ele.style.display = "block";
+                    //text.innerHTML = "<->";
+                }
+            }
 
-function toggleVueCartonMenu(){
-    document.getElementById("descrip_palette").style.display="none";
-    document.getElementById("descrip_carton").style.display="block";
-}
-function toggleVuePaletteMenu(){
-    document.getElementById("descrip_palette").style.display="block";
-    document.getElementById("descrip_carton").style.display="none";
-}
+            function toggleVueCartonMenu(){
+                document.getElementById("descrip_palette").style.display="none";
+                document.getElementById("descrip_carton").style.display="block";
+            }
+            function toggleVuePaletteMenu(){
+                document.getElementById("descrip_palette").style.display="block";
+                document.getElementById("descrip_carton").style.display="none";
+            }
+            function setColorPicker(){
+                document.getElementById('colorPalette').color.showPicker();
+            }
+            function setColor(val){
+                setHexColor(val);
+                document.getElementById('colorBtn').style.background='#'+val;
+                document.getElementById('colorBtn').value=val;
+            }
+            function toggleColor(){
+                var ele = document.getElementById('colorPalette');
+                if(ele.color.isVisible())
+                    ele.color.hidePicker();
+                else
+                    ele.color.showPicker();
+                /*
+                if(ele.style.display == "block") {
+                    ele.style.display = "none";
+                    //text.innerHTML = ">-<";
+                }
+                else {
+                    ele.style.display = "block";
+                    //text.innerHTML = "<->";
+                }*/
+            }
         </script>
-        
-    </head>
-    <body>
-        
 
-       <div id="page_container">
+    </head>
+    <body onload="setColorPicker()">
+
+
+        <div id="page_container">
             <div id="floating_bar" class="menuBar">
-             <!--<div class="nav"> 
-                <ul id="list-nav">
-                <li><a href="#">Home</a></li>
-                <li><a href="#">About Us</a></li>
-                <li><a href="#">Services</a></li>
-                <li><a href="#">Products</a></li>
-                <li><a href="#">Contact</a></li>
-                </ul>
-             </div>-->
+                <!--<div class="nav"> 
+                   <ul id="list-nav">
+                   <li><a href="#">Home</a></li>
+                   <li><a href="#">About Us</a></li>
+                   <li><a href="#">Services</a></li>
+                   <li><a href="#">Products</a></li>
+                   <li><a href="#">Contact</a></li>
+                   </ul>
+                </div>-->
                 
                 <div id="menu_produit">
-                 <div id="descrip_palette" class="desc" style="display: block;">
-                    <INPUT TYPE=text id ="textePalette" style="width:200px;height:40px" VALUE="desc palette" >
-                    <INPUT TYPE=text id ="nbrCarton" style="width:60px;height:40px" VALUE="12" >
-                    <INPUT TYPE=button id ="descBtn" style="width:60px;height:50px" VALUE="OK" onClick="setDesc()">
-                    <INPUT TYPE=button id="cinput2" class="color" VALUE="#00aa00" style="width:100px;height:50px;display:all" onClick="setHexColor(value)" />
-                    <INPUT TYPE=button id ="addBtn" style="width:200px;height:50px" VALUE="ajouter palette" onClick="addProductBtn()">
-                    <INPUT TYPE=button id ="rotate" style="width:60px;height:50px" VALUE="rotation" onClick="rotate()">
+                    <div id="descrip_palette" class="desc" style="display: block;">
+                        
+                        <!--<input TYPE=button id="color" name="color" value="#123456" onClick="alert(value)" ><div id="colorpicker"></div>-->
+                        <!--<INPUT class="color {pickerOnfocus:false}" id="colorPalette">-->
+                        <INPUT TYPE=text id ="textePalette" style="width:200px;height:40px" VALUE="desc palette" >
+                        <INPUT TYPE=text id ="nbrCarton" style="width:60px;height:40px" VALUE="12" >
+                        <INPUT TYPE=button id ="descBtn" style="width:60px;height:50px" VALUE="OK" onClick="setDesc()">
+                        <!--<INPUT TYPE=text id="color" class="color" VALUE="#00aa00" readonly style="width:100px;height:50px;display:all" onClick="setHexColor(value)" />-->
+                        <!--<INPUT TYPE=button id ="addBtn" style="width:200px;height:50px" VALUE="ajouter palette" onClick="addProductBtn()">-->
+                        <INPUT TYPE=button id ="rotate" style="width:60px;height:50px" VALUE="rotation" onClick="rotate()">
+                        
+                    </div>
+                    <div id="descrip_carton" class="desc" style="display: none;">
+                        <select id="artCombo" size="1" STYLE="font-family : arial; font-size : 12pt" onClick="fillVal()"></select>
+                        <INPUT TYPE=text id ="prefix" style="width:60px;height:40px" VALUE="C10" >
+                        <INPUT TYPE=text id ="article" style="width:60px;height:40px" VALUE="02000127" >
+                        <INPUT TYPE=text id ="nbrCoiffes" style="width:60px;height:40px" VALUE="2500" >
+                        <INPUT TYPE=button id ="descBtn" style="width:60px;height:50px" VALUE="OK" onClick="setDesc()">
+                        <!--<INPUT TYPE="text" id="colorCarton" class="color" VALUE="#00aa00" readonly style="width:100px;height:50px;display:all" onClick="setHexColor(value)" />-->
+                        
+<                       <!--<INPUT class="color {pickerOnfocus:false}" id="colorCarton" onClick="setHexColor(value)">-->
+                        <!--<input TYPE=button id="color" name="color" value="#123456" onClick="setHexColor(value)" ><div id="colorpicker"></div>-->
+                        <INPUT TYPE=button id ="addBtn" style="width:200px;height:50px" VALUE="ajouter palette" onClick="addProductBtn()">
+                        <INPUT TYPE=button id ="rotate" style="width:60px;height:50px" VALUE="rotation" onClick="rotate()">
+                    </div>
+
                 </div>
-                <div id="descrip_carton" class="desc" style="display: none;">
-                    <select id="artCombo" size="1" STYLE="font-family : arial; font-size : 12pt" onClick="fillVal()"></select>
-                    <INPUT TYPE=text id ="prefix" style="width:60px;height:40px" VALUE="C10" >
-                    <INPUT TYPE=text id ="article" style="width:60px;height:40px" VALUE="02000127" >
-                    <INPUT TYPE=text id ="nbrCoiffes" style="width:60px;height:40px" VALUE="2500" >
-                    <INPUT TYPE=button id ="descBtn" style="width:60px;height:50px" VALUE="OK" onClick="setDesc()">
-                    <INPUT TYPE="button" id="cinput2" class="color" VALUE="#00aa00" style="width:100px;height:50px;display:all" onClick="setHexColor(value)" />
-                    <INPUT TYPE=button id ="addBtn" style="width:200px;height:50px" VALUE="ajouter palette" onClick="addProductBtn()">
-                    <INPUT TYPE=button id ="rotate" style="width:60px;height:50px" VALUE="rotation" onClick="rotate()">
-                </div>
-                    
-                </div>
-                
-        </div>
-            
-           
-                
+
+            </div>
+
+
+
             <div style="clear:both;"></div>
             <div id="contentDiv">
-                
-            
-            <div id="centermenu" style="display: none;">
-                <INPUT TYPE=button id ="getClient" style="width:100px;height:50px" VALUE="requête" onClick="ajaxFunction()">
-                <INPUT TYPE=button id ="removeAll" style="width:100px;height:50px" VALUE="clean" onClick="removeLclDb()">
-                <INPUT TYPE=button id ="update" style="width:100px;height:50px" VALUE="update" onClick="updateBtn()">
-                <INPUT TYPE=button id ="syncM2S" style="width:100px;height:50px" VALUE="sync M2S" onClick="syncM2SBtn()">
-                <INPUT TYPE=button id ="syncS2M" style="width:100px;height:50px" VALUE="sync S2M" onClick="syncS2MBtn()">
-                <INPUT TYPE=button id ="syncArticle" style="width:100px;height:50px" VALUE="sync Article" onClick="syncS2MArticleBtn()">
-                
-                <INPUT TYPE=text id ="xoff" style="width:60px;height:50px" VALUE="-80" >
-                <INPUT TYPE=text id ="yoff" style="width:60px;height:50px" VALUE="-320" >
-                <INPUT TYPE=text id ="verb1" style="width:150px;height:30px" VALUE="0" >
-                <INPUT TYPE=text id ="verb2" style="width:150px;height:30px" VALUE="0" >
-                <INPUT TYPE=text id ="verb3" style="width:150px;height:30px" VALUE="0" >
-                <INPUT TYPE=text id ="verb4" style="width:150px;height:30px" VALUE="0" >
-                <INPUT TYPE=text id ="verb5" style="width:150px;height:30px" VALUE="0" >
-             </div>
-                            
 
-   
-                
+
+                <div id="centermenu" style="display: none;">
+                    <INPUT TYPE=button id ="refresh" style="width:100px;height:50px" VALUE="refresh" onClick="refresh()">
+                    <INPUT TYPE=button id ="removeAll" style="width:100px;height:50px" VALUE="clean" onClick="removeLclDb()">
+                    <INPUT TYPE=button id ="color" style="width:100px;height:50px" VALUE="color" onClick="toggleColor()">
+                    <INPUT TYPE=button id ="syncM2S" style="width:100px;height:50px" VALUE="sync M2S" onClick="syncM2SBtn()">
+                    <INPUT TYPE=button id ="syncS2M" style="width:100px;height:50px" VALUE="sync S2M" onClick="syncS2MBtn()">
+                    <INPUT TYPE=button id ="syncArticle" style="width:100px;height:50px" VALUE="sync Article" onClick="syncS2MArticleBtn()">
+
+                    <INPUT TYPE=text id ="xoff" style="width:60px;height:50px" VALUE="-80" >
+                    <INPUT TYPE=text id ="yoff" style="width:60px;height:50px" VALUE="-320" >
+                    <INPUT TYPE=text id ="verb1" style="width:150px;height:30px" VALUE="0" >
+                    <INPUT TYPE=text id ="verb2" style="width:150px;height:30px" VALUE="0" >
+                    <INPUT TYPE=text id ="verb3" style="width:150px;height:30px" VALUE="0" >
+                    <INPUT TYPE=text id ="verb4" style="width:150px;height:30px" VALUE="0" >
+                    <INPUT TYPE=text id ="verb5" style="width:150px;height:30px" VALUE="0" >
+                </div>
+
+
+
+
 
             </div>
-            <div id="svgrow">
-                <div id="svgbasics" class="no-copy"></div>
-                
-            </div>
 
-            
+            <div id="svgbasics" class="no-copy"></div>
+
+
+
+
             <div id="log" style="display:none;">
-                <input type="text" name="txtarea" />
-                <a id="colorpicker" href="http://www.menucool.com/color-picker">Color Picker for website, easy-to-use</a> 
+                <!--<input type="text" name="txtarea" />
+                <a id="colorpicker" href="http://www.menucool.com/color-picker">Color Picker for website, easy-to-use</a> -->
             </div>
-            
+
             <div id="msg"></div>
-            
+
         </div>
-        
+
         <div id="floating_bar" class="footerBar">
             <div id="header"><h1>Stock Manager</h1></div>
             <div id="titleText" style="display: block;">
-            
-            
+
+
             </div>
-                <div id="right_column">
-                 <div id="floating_menu" style="display: block;">
+            <div id="right_column">
+                <div id="floating_menu" style="display: block;">
+                    <input TYPE=text class="color {pickerOnfocus:false}" id="colorPalette" onchange="setColor(value)" >
+                        <INPUT TYPE=button id ="colorBtn" style="width:100px;height:50px" VALUE="" onClick="setHexColor(value)">
                     <INPUT TYPE=button id ="zoomplus" style="width:60px;height:50px" VALUE="zoom +" onClick="zoomplus()">
                     <INPUT TYPE=text id ="wheelvalue" style="width:60px;height:40px" VALUE="0" >
                     <INPUT TYPE=button id ="zoommoins" style="width:60px;height:50px" VALUE="zoom -" onClick="zoommoins()">
                     <INPUT TYPE=button id ="vuePalette" style="width:100px;height:50px" VALUE="vue palette" onClick="vuePaletteBtnPressed()" disabled>
                     <INPUT TYPE=button id ="vueCarton" style="width:100px;height:50px" VALUE="vue carton" onClick="vueCartonBtnPressed()" disabled>
                     <INPUT TYPE=button id ="myHeader" style="width:60px;height:50px" VALUE="Menu" onClick="toggleMenu()">
-                 </div> 
-                </div>
+                </div> 
+            </div>
         </div>
-        
+
     </body>
 </html>

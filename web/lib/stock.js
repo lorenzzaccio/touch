@@ -77,7 +77,7 @@ var stock = {
         //}
             
     },
-    getLength:function(entry){
+    getLength:function(){
       var length=0;
       if (window.localStorage.length - 1) {
             var i, key;
@@ -100,7 +100,9 @@ var stock = {
                 j=j+1;
             }
         }
-        arrec[entry.index-1] = arrow;
+        //arrec[entry.index-1] = arrow;
+        arrec[arrec_index] = arrow;
+        arrec_index++;
     },
     tableEdit: function(entry) {},
     tableRemove: function(entry) {}
