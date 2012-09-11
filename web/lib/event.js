@@ -82,6 +82,7 @@ function svgOver() {
     bOver=1;
     if( (itemFocused==1) && (start_drag==0)){
         selectedItemOver=this;
+        
         item = selectedItemOver.getAttributeNS(null,"id");
         var row = getRowNumArrec(item,ID_HEADER);
         if(row!=selectedIndex){
@@ -92,6 +93,7 @@ function svgOver() {
                     
     if( (itemFocused==0) && (start_drag==0)){
         selectedItem = this;
+        item = this.id;
         item = selectedItem.getAttributeNS(null,"id");
         
         selectedIndex = getRowNumArrec(item,ID_HEADER);
@@ -102,7 +104,6 @@ function svgOver() {
     }
     if((selectedIndexOver != selectedIndex)&&(start_drag==0))
         $(this.firstChild).attr('stroke', 'lime'); 
-                
 } 
 
 function svgOut() { 
@@ -276,15 +277,10 @@ function tmouseDown(e){
 function mouseDown(e){
     //if(e.clientX>=1100)
     //    return;      
-    /*var coords = myMapApp.calcCoord(e);
-    var vx = coords.x.toFixed(1);
-    var vy = coords.y.toFixed(1);
-    document.getElementById("verb1").value="x="+vx;
-    document.getElementById("verb2").value="y="+vy;
-    */
     var el = e.target;
     var id = el.parentNode.getAttributeNS(null,"id");
     document.getElementById("verb4").value="id="+id;
+    
     if(bOver==1){
         back_drag=0;           
         if((selectedIndexOver != selectedIndex)&&(itemFocused==1)&&(selectedIndexOver!=-1) ){
@@ -361,10 +357,20 @@ function mouseDown(e){
             x_ori_back=e.clientX-zoomx/ratioZoom;
             y_ori_back=e.clientY-zoomy/ratioZoom;
         }
+        pressTimer = window.setTimeout(setLongClick,1000);
     }
 }
-            
+var pressTimer;
+
+function setLongClick(){
+    if(bOver==1){
+        
+    }else{
+        
+    }
+}
 function mouseUp(e){
+  clearTimeout(pressTimer);
     if(back_drag==1){
         back_drag=0;
         updateViewCookie();

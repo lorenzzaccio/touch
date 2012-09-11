@@ -29,7 +29,7 @@ function loadDefaultValue(type){
         defaultValue = copyRow(selArr);
         defaultValue[TRANSX_HEADER]=0;
         defaultValue[TRANSY_HEADER]=0;
-        defaultValue[FILLCOLOR_HEADER] = '#'+document.getElementById("colorCarton").value;
+        //defaultValue[FILLCOLOR_HEADER] = '#'+document.getElementById("colorBtn").value;
         defaultValue[ARG1_HEADER] = document.getElementById("prefix").value;
         defaultValue[ARG2_HEADER] = document.getElementById("article").value;
         defaultValue[QUANTITE_HEADER] = document.getElementById("nbrCoiffes").value;
@@ -221,7 +221,7 @@ function recordLineArticle(arrow){
     var entry = {
         //index: parseInt(arrow[INDEX_HEADER]),
         prefix: arrow[0],
-        article: parseInt(arrow[1])
+        art: parseInt(arrow[1])
     };
     article.storeAdd(entry);
 }

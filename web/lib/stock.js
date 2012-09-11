@@ -53,7 +53,8 @@ var stock = {
         
         if (window.localStorage.length - 1) {
             var i, key;
-            for (i = 0; i < window.localStorage.length; i++) {
+            var l=window.localStorage.length;
+            for (i = 0; i < l; i++) {
                 key = window.localStorage.key(i);
                 if (/stock+/.test(key)) {
                     window.localStorage.removeItem(key);

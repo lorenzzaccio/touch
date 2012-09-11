@@ -103,6 +103,7 @@
                 lclArrow = loadDefaultValue(type);
                 lclArrow[col]=id;
                 lclArrow[INDEX_HEADER]=selIndex;
+                lclArrow[LIEU_HEADER]=locationVal;
                 var l = arrec.length;
                 arrec[l] = lclArrow;
                 //setCookie(COOKIE_NAME+selIndex,lclArrow,5);
@@ -117,6 +118,7 @@
                 lclArrow[col]=id;
                 lclArrow[INDEX_HEADER]=selIndex;
                 lclArrow[VIEW_HEADER]=parent;
+                lclArrow[LIEU_HEADER]=locationVal;
                 var l = arrec.length;
                 arrec[l] = lclArrow;
                 //setCookie(COOKIE_NAME+selIndex,lclArrow,5);

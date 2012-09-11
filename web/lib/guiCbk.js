@@ -62,7 +62,7 @@ function addProductBtn(){
     if(activeView=="ROOM")
         addPalette();
     else{
-            addCaisse();
+       addCaisse();
     }
 }
 function addCaisse(){

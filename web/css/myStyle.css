@@ -141,7 +141,9 @@ ul#list-nav li a:hover {
     float:left;
     }
 #floating_menu{
-    float:left;
+    position:fixed;
+    bottom:0;
+    left:10;
     margin-left:10px;
 }
 #floating_bar{

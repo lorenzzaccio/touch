@@ -47,19 +47,41 @@ var article = {
     },
     storeRemoveAll: function(entry) {
         var  key,j,i;
-        i=0;
         j=0;
+        i=0;
+        
         if (window.localStorage.length - 1) {
             var i, key;
-            for (i = 0; i < window.localStorage.length; i++) {
+            var l=window.localStorage.length;
+            for (i = 0; i < l; i++) {
                 key = window.localStorage.key(i);
-                if (/article\d+/.test(key)) {
-                    window.localStorage.removeItem(key);//(window.localStorage.getItem(key)));
+                if (/article+/.test(key)) {
+                    window.localStorage.removeItem(key);
                 }
-                i++;
+            }
+      }
+    
+            if (article.index) 
+                window.localStorage.setItem("article:index", article.index = 1);            
+    },
+    storeRemoveAll2: function(entry) {
+        var  key,j,i;
+        i=0;
+        j=0;
+        if (localStorage.length - 1) {
+            var i, key;
+            var length = localStorage.length;
+            for (i = 0; i < length; i++) {
+                key = localStorage.key(i);
+                if (/article+/.test(key)) {
+                    localStorage.removeItem(key);//(window.localStorage.getItem(key)));
+                }
+                //if(i==length-5)
+                //    alert("i="+i);
+                //i++;
             } 
             if (article.index) 
-                window.localStorage.setItem("article:index", article.index = 1);
+                localStorage.setItem("article:index", article.index = 1);
         }
             
     },
