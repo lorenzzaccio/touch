@@ -9,7 +9,7 @@
         <title>Stock Manager</title>
         <!---->
         <script type="text/javascript" src="jquery-ui-1.8.23.custom/js/jquery-1.8.0.min.js"></script>
-        <!--<script type="text/javascript" src="jquery-ui-1.8.23.custom/js/jquery-ui-1.8.23.custom.min.js"></script>-->
+        <script type="text/javascript" src="jquery-ui-1.8.23.custom/js/jquery-ui-1.8.23.custom.min.js"></script>
         <script type="text/javascript" src="jquery.svg-1.4.5/jquery.svg.js"></script>
         <script type="text/javascript" src="jquery.svg-1.4.5/jquery.svgdom.js"></script>
 
@@ -34,7 +34,7 @@
         <script type="text/javascript" src="lib/sql.js"></script>
         <script type="text/javascript" src="lib/stock.js"></script>
         <script type="text/javascript" src="lib/article.js"></script>
-        <script type="text/javascript" src="lib/rect.js"></script>
+        <!--<script type="text/javascript" src="lib/rect.js"></script>-->
         <!--<script type="text/javascript" src="lib/fd-slider.js"></script>-->
         <!--<script src="lib/mcColorPicker.js" type="text/javascript"></script> -->
         <script src="lib/event.js" type="text/javascript"></script>
@@ -62,18 +62,18 @@
             var zoomh = 0;
             var zoomw = 0;
             var locationVal="ay";
+            var $dialog;
+            var screenW = "800px";
+            var screenH = "640px";
             //var objStock = new stock();
 
             $(function(){
                 $('#svgbasics').svg({onLoad: drawInitial});
                 drawcaps();
             });
-
+            
             function drawInitial() {
-                display = getDisplay(document,'mainMenu');
-                //myMapApp = new mapApp(display,false,undefined);
-                //$('#colorpicker').farbtastic('#color');
-                //initEventHandler();
+                initEventHandler();
                 $('#svgbasics').svg('get').clear();
                 g_main = $('#svgbasics').svg('get').group({id: 'mainGroup'});
                 myGraph = new graphic(g_main,globalVar);
@@ -84,6 +84,7 @@
                 
                 populateCombo("artCombo");
                 activeView="ROOM";
+                setSvgWindow();
                 var mydiv = document.getElementById("svgbasics");
                 screenW = mydiv.offsetWidth;
                 screenH = mydiv.offsetHeight;
@@ -91,7 +92,7 @@
                 zoomy = 0 ;
                 zoomh = screenH;
                 zoomw = screenW;
-                refresh();
+                //refresh();
                 document.getElementById("verb1").value="width="+screenW;
                 document.getElementById("verb2").value="height="+screenH;
                 readViewCookie();
@@ -99,14 +100,16 @@
                 document.getElementById("wheelvalue").value=ratioZoom;
                 myGraph.updateViewBox();
                 load_combo_type();
+                load_combo_lieu();
                 locationVal=document.getElementById("locationCombo").value;
-                var rect1 = new rect("mainMenu","rectangle1",100,100,160,80,"#FFEE44",5,"#3388FF");
-                var bg = new rect("mainMenu","bg",0,0,800,800,"#EEEEEE",15,"#3388FF");
-                display.setAttributeNS(null,"viewBox","10,10,860,860");
-                
-                //rect1.bind('click', svgClicked);
-                //rect1.bind('mouseover', svgOver);
-                //rect1.bind('mouseout', svgOut); 
+            }
+            function setSvgWindow(){
+                var screenW = screen.width;
+                var screenH = screen.height;
+                var wnd = document.getElementById("svgbasics");
+                wnd.style.width = (screenW-0)+ 'px';
+                wnd.style.height = (screenH - 100)+ 'px';
+                //wnd.style.top=140px;
             }
             function refresh(){
                 activeView="ROOM";
@@ -185,7 +188,7 @@
                 toto.value=ratioZoom; 
                 svg.configure({viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh})
                 updateViewCookie()
-                display.setAttributeNS(null,"viewBox","10,10,"+zoomw+","+zoomh);
+                //display.setAttributeNS(null,"viewBox","10,10,"+zoomw+","+zoomh);
             }
             
             function zoomplus(){
@@ -204,7 +207,7 @@
                 toto.value=ratioZoom; 
                 svg.configure({viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh})
                 updateViewCookie();
-                display.setAttributeNS(null,"viewBox","10,10,"+zoomw+","+zoomh);
+                //display.setAttributeNS(null,"viewBox","10,10,"+zoomw+","+zoomh);
             }
             
             function drawcaps() {
@@ -364,6 +367,7 @@
                 article.storeRemoveAll();
                 article.init();
                 syncS2MArticlePhp();
+                populateCombo("artCombo");
             }
             function add_option (select_id, text) {
                 var select = document.getElementById(select_id);
@@ -433,16 +437,48 @@
             function toggleMenu(){
                 toggle2('centermenu');
             }
+
+            function closeMenu(){
+                var wnd = document.getElementById("testWind");
+                wnd.style.display = "none";
+            }
+            
+            function hideMenuBars(){
+                var wnd1 = document.getElementById("floating_bar");
+                var wnd2 = document.getElementById("floating_bar_bottom");
+                if(wnd1.style.display == "block") 
+                    wnd1.style.display = "none";
+                else
+                    wnd1.style.display = "block";
+            
+                if(wnd2.style.display == "block") 
+                    wnd2.style.display = "none";
+                else
+                    wnd2.style.display = "block";
+            }
             function toggle2(showHideDiv) {
                 var ele = document.getElementById(showHideDiv);
+                var wnd = document.getElementById("testWind");
+                wnd.style.left = posx+ 'px';
+                wnd.style.top = posy+ 'px';
                 //var text = document.getElementById(switchTextDiv);
                 if(ele.style.display == "block") {
-                    ele.style.display = "none";
+                    //ele.style.display = "none";
+                    wnd.style.display = "none";
+                    //document.getElementById('dimmer').style.display = "none";
                     //text.innerHTML = ">-<";
+                    //$dialog.dialog('close');
+                    // prevent the default action, e.g., following a link
+                    //return false;
                 }
                 else {
-                    ele.style.display = "block";
+                    //ele.style.display = "block";
+                    wnd.style.display = "block";
                     //text.innerHTML = "<->";
+                    //$dialog.dialog('open');
+                    //document.getElementById('dimmer').style.display = "block";
+                    // prevent the default action, e.g., following a link
+                    //return false;
                 }
             }
 
@@ -490,12 +526,17 @@
                     //text.innerHTML = "<->";
                 }*/
             }
+            function cleanAll(){
+                localStorage.clear();
+                drawInitial();
+                setTimeout("drawcaps()", 800);
+            }
             function SendColor(val){
                 setHexColor(val);
                 document.getElementById('colorBtn').style.background='#'+val;
                 document.getElementById('colorBtn').value=val;
             }
-            function load_combo_type(){
+            function load_combo_lieu(){
                 var typeOptions = [];	
                 typeOptions[0] = "ay";
                 typeOptions[1] = "magentaCRD";
@@ -504,6 +545,16 @@
 	
                 load_combo("locationCombo",typeOptions);
             }
+            
+            function load_combo_type(){
+                var typeOptions = [];	
+                typeOptions[0] = "palette30";
+                typeOptions[1] = "palette60";
+                typeOptions[2] = "paletteEurope";
+	
+                load_combo("typeProduitCombo",typeOptions);
+            }
+            
             function add_option (select_id, text) {
                 var select = document.getElementById(select_id);
                 select.options[select.options.length] = new Option(text);
@@ -513,6 +564,36 @@
                 locationVal=document.getElementById("locationCombo").value;
                 activeView="ROOM";
                 drawcaps();
+            }
+            function changeTypeProduit(){
+                if(itemFocused == 0)
+                    return;
+                
+                var typeProduit=document.getElementById("typeProduitCombo").value;
+                var w = 160;
+                var h = 80;
+                
+                if(typeProduit=="palette60"){
+                    w = 160;
+                    h = 160;
+                }
+                
+                if(typeProduit=="palette30"){
+                    w = 160;
+                    h = 80;
+                }
+                
+                if(typeProduit=="paletteEurope"){
+                    w = 130;
+                    h = 90;
+                }
+                  
+                var arrow = arrec[selectedIndex];
+                arrow[WIDTH_HEADER] = w;
+                arrow[HEIGHT_HEADER] = h;
+                arrow[TYPE_HEADER] = typeProduit;
+                drawcaps();
+                    
             }
         </script>
 
@@ -783,24 +864,12 @@
         <AREA COORDS="258,178,274,194" HREF="javascript:{SendColor('CCCC00')}" onClick="SendColor('CCCC00');return false">
         <AREA COORDS="274,178,290,194" HREF="javascript:{SendColor('CCFF00')}" onClick="SendColor('CCFF00');return false">
     </MAP>
-    <svg id="mainMenu"  viewBox="0 0 2048 1536" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" onload="" zoomAndPan="disable" xml:space="preserve">	
-        <!--<rect id="bgRect" x="-0" y="0" width="100%" height="100%" fill="yellow" stroke="red" />-->
-    </svg>
-    <div id="page_container">
-        <div id="floating_bar" class="menuBar">
-            <!--<div class="nav"> 
-               <ul id="list-nav">
-               <li><a href="#">Home</a></li>
-               <li><a href="#">About Us</a></li>
-               <li><a href="#">Services</a></li>
-               <li><a href="#">Products</a></li>
-               <li><a href="#">Contact</a></li>
-               </ul>
-            </div>-->
 
+
+    <div id="page_container">
+        <div id="floating_bar" class="menuBar" style="display: block;">
             <div id="menu_produit">
                 <div id="descrip_palette" class="desc" style="display: block;">
-
                     <!--<input TYPE=button id="color" name="color" value="#123456" onClick="alert(value)" ><div id="colorpicker"></div>-->
                     <!--<INPUT class="color {pickerOnfocus:false}" id="colorPalette">-->
                     <INPUT TYPE=text id ="textePalette" style="width:200px;height:40px" VALUE="desc palette" >
@@ -824,25 +893,14 @@
                     <INPUT TYPE=button id ="addBtn" style="width:auto;height:50px" VALUE="ajouter palette" onClick="addProductBtn()">
                     <INPUT TYPE=button id ="rotate" style="width:auto;height:50px" VALUE="rotation" onClick="rotate()">
                 </div>
-
             </div>
-
         </div>
 
 
 
-        <div style="clear:both;"></div>
+        <!--<div style="clear:both;"></div>-->
         <div id="contentDiv">
-
-
             <div id="centermenu" style="display: none;">
-                <INPUT TYPE=button id ="refresh" style="width:auto;height:50px" VALUE="refresh" onClick="refresh()">
-                <INPUT TYPE=button id ="removeAll" style="width:auto;height:50px" VALUE="clean" onClick="removeLclDb()">
-                <INPUT TYPE=button id ="color" style="width:auto;height:50px" VALUE="color" onClick="toggleColor()">
-                <INPUT TYPE=button id ="syncM2S" style="width:auto;height:50px" VALUE="sync M2S" onClick="syncM2SBtn()">
-                <INPUT TYPE=button id ="syncS2M" style="width:auto;height:50px" VALUE="sync S2M" onClick="syncS2MBtn()">
-                <INPUT TYPE=button id ="syncArticle" style="width:auto;height:50px" VALUE="sync Article" onClick="syncS2MArticleBtn()">
-
                 <INPUT TYPE=text id ="xoff" style="width:60px;height:50px" VALUE="-80" >
                 <INPUT TYPE=text id ="yoff" style="width:60px;height:50px" VALUE="-320" >
                 <INPUT TYPE=text id ="verb1" style="width:50px;height:30px" VALUE="0" >
@@ -850,37 +908,15 @@
                 <INPUT TYPE=text id ="verb3" style="width:50px;height:30px" VALUE="0" >
                 <INPUT TYPE=text id ="verb4" style="width:50px;height:30px" VALUE="0" >
                 <INPUT TYPE=text id ="verb5" style="width:50px;height:30px" VALUE="0" >
-                <select id="locationCombo" onchange="changeLocation()">
-                </select> 
-            </div>
-
-
-
-
-
+             </div>
         </div>
 
         <div id="svgbasics" class="no-copy">
         </div>
 
-
-
-
-        <div id="log" style="display:none;">
-            <!--<input type="text" name="txtarea" />
-            <a id="colorpicker" href="http://www.menucool.com/color-picker">Color Picker for website, easy-to-use</a> -->
-        </div>
-
-        <div id="msg"></div>
-
-    </div>
-
-    <div id="floating_bar" class="footerBar">
+    <div id="floating_bar_bottom" class="footerBar" style="display: block;">
         <div id="header"><h1>Stock Manager</h1></div>
-        <div id="titleText" style="display: block;">
-
-
-        </div>
+        <div id="titleText" style="display: block;"></div>
         <div id="right_column">
             <div id="floating_menu" style="display: block;">
                 <!--<input TYPE=text class="color {pickerOnfocus:false}" id="colorPalette" onchange="setColor(value)" >-->
@@ -896,6 +932,21 @@
             </div> 
         </div>
     </div>
+
+
+    <div class="floating-menu" id="testWind"style="display: none;">
+        <INPUT TYPE=button id ="refresh" style="width:100px;height:40px" VALUE="refresh" onClick="refresh()">
+        <INPUT TYPE=button id ="removeAll" style="width:100px;height:40px" VALUE="clean" onClick="removeLclDb()">
+        <INPUT TYPE=button id ="cleanAll" style="width:100px;height:40px" VALUE="cleanAll" onClick="cleanAll()">
+        <INPUT TYPE=button id ="syncM2S" style="width:100px;height:40px" VALUE="sync M2S" onClick="syncM2SBtn()">
+        <INPUT TYPE=button id ="syncS2M" style="width:100px;height:40px" VALUE="sync S2M" onClick="syncS2MBtn()">
+        <INPUT TYPE=button id ="syncArticle" style="width:100px;height:40px" VALUE="sync Article" onClick="syncS2MArticleBtn()">
+        <select id="locationCombo" style="width:100px;height:30px" onchange="changeLocation()"></select> 
+        <select id="typeProduitCombo" onchange="changeTypeProduit()"></select>
+        <INPUT TYPE=button id ="closeBarsBtn" style="width:100px;height:40px" VALUE="closeBars" onClick="hideMenuBars()">
+        <INPUT TYPE=button id ="closeBtn" style="width:100px;height:40px" VALUE="close" onClick="closeMenu()">
+    </div>
+    <div id="resultat"></div>
 
 </body>
 </html>

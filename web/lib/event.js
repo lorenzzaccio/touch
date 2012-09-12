@@ -3,7 +3,8 @@
  * and open the template in the editor.
  */
 
-
+var posx = 0;
+var posy = 0;
 function initEventHandler(){
     
     if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
@@ -133,6 +134,8 @@ function getNbrCaisse(lclSelectedItem){
 
 function mouseMove(e){
     nbrClick=0;
+    longClickStarted=0;
+    clearTimeout(pressTimer);
     /*var coords = myMapApp.calcCoord(e);
     var vx = coords.x.toFixed(1);
     var vy = coords.y.toFixed(1);
@@ -169,6 +172,8 @@ function tmouseMove(e){
     var touch = e.touches[0];
     mouseX = touch.pageX;
     mouseY = touch.pageY;
+    longClickStarted=0;
+    clearTimeout(pressTimer);
     /*
     var coords = myMapApp.calcCoordTouch(e);
     var vx = coords.x.toFixed(1);
@@ -272,6 +277,12 @@ function tmouseDown(e){
             y_ori_back=mouseY-zoomy/ratioZoom;
         }
     }
+    if(longClickStarted==0){
+            pressTimer = window.setTimeout(setLongClick,600);
+            longClickStarted=1;
+             posx = mouseX;
+             posy = mouseY;
+        }
 }
 
 function mouseDown(e){
@@ -357,20 +368,32 @@ function mouseDown(e){
             x_ori_back=e.clientX-zoomx/ratioZoom;
             y_ori_back=e.clientY-zoomy/ratioZoom;
         }
-        pressTimer = window.setTimeout(setLongClick,1000);
+        if(longClickStarted==0){
+            pressTimer = window.setTimeout(setLongClick,600);
+            longClickStarted=1;
+             posx = e.clientX;
+             posy = e.clientY;
+        }
     }
 }
 var pressTimer;
-
+var longClickStarted = 0;
 function setLongClick(){
+   
     if(bOver==1){
-        
+       //doNothing 
     }else{
-        
+      //display context menu
+      toggleMenu();
+      longClickStarted=0;
+      back_drag=0;
+      clearTimeout(pressTimer);
     }
 }
 function mouseUp(e){
-  clearTimeout(pressTimer);
+    longClickStarted=0;
+    back_drag=0;
+    clearTimeout(pressTimer);
     if(back_drag==1){
         back_drag=0;
         updateViewCookie();
@@ -387,7 +410,9 @@ function mouseUp(e){
     dy=0;            
 }
 function tmouseUp(e){
+    longClickStarted=0;
     back_drag=0;
+    clearTimeout(pressTimer);
     //var svg = $('#svgbasics').svg('get');
     //svg.getElementById("gVirtRect"); 
     //svg.remove(virtRect);
