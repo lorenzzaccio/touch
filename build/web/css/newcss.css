@@ -1,0 +1,42 @@
+@charset "UTF-8";
+/* CSS Document */
+    #page_container{width:96%;margin:0 auto;}
+    #header{width:100%;margin:auto ;background:#CCC;}
+    geometry{width:100%;margin:auto ;background:#999;}
+    #left_column{width:18%;float:left;background:#CCC;}
+    /*#svgrow{width: 842px; height: 842px;float:none;background:#888888; border: 2px solid #484;}*/
+    #svgrow{width: 100%; height: 842px;float:none;background:#888888; border: 2px solid #484;}
+    
+    #svgmenu { width: 70%; height: 100%;float:left;background:#0341A2; border: 0px solid #484; }
+    #svgbasics { width: 29%; height: 745px;float:right;background:#888888; border: 0px solid #484; }
+    #right_column{width:18%;float:left;background:#CCC;}
+    #footer{clear:both;background:#999;}
+
+    /* Intrinsic HTML Elements */
+    body{margin:0;padding:0;}
+    div{margin:0;padding:0;}
+    h1{margin:0;padding:0;}
+    h2{margin:0;padding:0;}
+    h3{margin:0;padding:0;}
+    p{margin:0;padding:0;}
+    ul{margin:0;padding:0;}
+    li{list-style-type:none;}
+    h1, h2, h3, p{margin:0;padding:10px;}
+
+table { width:100%; margin: 0 auto; font-size: 14px; border: 1px solid #ccc; border-width: 1px 0 0 1px; border-collapse: collapse; }
+caption { margin: 0 auto; font-size: 12px; margin-bottom: 2em; }
+td { padding: 10px; border: 1px solid #ccc; border-width: 0 1px 1px 0; }
+tr:hover td { background: #CAEFFD; color: #0768B3; cursor: pointer; } 
+
+.fullscreen{
+  display: block;
+  position: absolute;
+  top:0;
+  left:0%;
+  width:100%;
+  height:100%;
+  z-index:9999;
+  margin:0;
+  padding:0;
+  background:#333;
+}

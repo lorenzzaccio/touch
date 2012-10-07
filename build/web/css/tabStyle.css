@@ -1,0 +1,26 @@
+@charset "UTF-8";
+/* CSS Document */
+    #page_container{width:96%;margin:0 auto;}
+    #header{width:100%;margin:auto ;background:#CCC;}
+    geometry{width:100%;margin:auto ;background:#999;}
+    #left_column{width:18%;float:left;background:#CCC;}
+    #svgbasics { width: 64%; height: 550px;float:left;background:#ECECEC; border: 2px solid #484; }
+    #right_column{width:18%;float:left;background:#CCC;}
+    #footer{clear:both;background:#999;}
+
+    /* Intrinsic HTML Elements */
+    body{margin:0;padding:0;}
+    div{margin:0;padding:0;}
+    h1{margin:0;padding:0;}
+    h2{margin:0;padding:0;}
+    h3{margin:0;padding:0;}
+    p{margin:0;padding:0;}
+    ul{margin:0;padding:0;}
+    li{list-style-type:none;}
+    h1, h2, h3, p{margin:0;padding:10px;}
+
+table { width:100%; margin: 0 auto; font-size: 14px; border: 1px solid #ccc; border-width: 1px 0 0 1px; border-collapse: collapse; }
+caption { margin: 0 auto; font-size: 12px; margin-bottom: 2em; }
+td { padding: 10px; border: 1px solid #ccc; border-width: 0 1px 1px 0; }
+tr:hover td { background: #CAEFFD; color: #0768B3; cursor: pointer; } 
+
