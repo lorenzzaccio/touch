@@ -143,17 +143,33 @@ function drawVirtualRect(x,y,w,h){
     }); 
     return group;
 }
-function drawPalyRect(){
+function drawPlayRect(sw,sh){
+    var w = 100;
+    var h = 100;
+    var i = 0;
+    var rw = sw / w;
+    var rh = sh / h;
+    var r = (rw > rh) ? rw : rh;
     var svg = $('#svgbasics').svg('get');
     var group = svg.group(null,"gPlayRect");
-
-    svg.rect(group, 0, 0, 840, 840, 1, 1, {
+    for(i=0;i<=r;i++){
+    svg.rect(group, i*w, 0, sw, sh, 1, 1, {
         id:"playRect",
         fill: "none", 
         stroke: "blue", 
-        strokeWidth: 10,
+        strokeWidth: 1,
         transform:"translate(0,0)"
     }); 
+    
+    svg.rect(group, 0,i*h, sw, sh, 1, 1, {
+        id:"playRect",
+        fill: "none", 
+        stroke: "blue", 
+        strokeWidth: 1,
+        transform:"translate(0,0)"
+    }); 
+    
+    }
     return group;
 }
 function drawRect(arrow){

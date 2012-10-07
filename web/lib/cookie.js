@@ -24,7 +24,7 @@ function copyRow(oriRow){
     
 function loadDefaultValue(type){
     var defaultValue=[];
-    
+    alert(selArr[TYPE_HEADER] + "  "+itemFocused);
     if((type==selArr[TYPE_HEADER])&&(itemFocused==1)){
         defaultValue = copyRow(selArr);
         defaultValue[TRANSX_HEADER]=0;

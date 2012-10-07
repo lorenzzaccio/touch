@@ -5,6 +5,8 @@
 
 var posx = 0;
 var posy = 0;
+var handlingGesture = false;
+var rotate_deg = 0;
 function initEventHandler(){
     
     if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
@@ -37,6 +39,17 @@ function initEventHandler(){
         $("svg").bind("mousemove", mouseMove);
         $("svg").bind('click', svgClickedBckg);
     } 
+    resetData();
+}
+
+function resetData(){
+    itemFocused=0;
+    selectedItemOver = null;
+    selectedItem = null;
+    selectedIndex = -1;
+    selectedRow=-1;
+    bOver = 0;
+    back_drag=0;
 }
 
 function svgClickedBckg(e) { 
@@ -55,13 +68,14 @@ function svgClickedBckg(e) {
         //hideCP();
         }
         start_drag=0;
-        selectedItem=null;
-        selectedIndex=-1;
+        resetData();
     }                
-} 
+}
+
 function resetClick(){
     nbrClick=0;
 }
+
 function svgClicked() { 
     //lblState.setValue("click",undefined);
     back_drag=0;                
@@ -77,6 +91,7 @@ function svgClicked() {
         }
     } 
 } 
+
  
 function svgOver() {        
     var item;
@@ -129,71 +144,14 @@ function getNbrCaisse(lclSelectedItem){
     return searchInArray(VIEW_HEADER,item);
 }
 
-
-           
-
 function mouseMove(e){
     nbrClick=0;
     longClickStarted=0;
-    clearTimeout(pressTimer);
-    /*var coords = myMapApp.calcCoord(e);
-    var vx = coords.x.toFixed(1);
-    var vy = coords.y.toFixed(1);
-    document.getElementById("verb1").value="x="+vx;
-    document.getElementById("verb2").value="y="+vy;
-*/    
+    clearTimeout(pressTimer);  
+    
     if(back_drag==1){
         dx_back = (e.clientX-x_ori_back)*ratioZoom;
         dy_back = (e.clientY-y_ori_back)*ratioZoom;  
-        document.getElementById("verb3").value="y="+dx_back;
-        var svg = $('#svgbasics').svg('get');
-        zoomx =  parseInt(dx_back);
-        zoomy =  parseInt(dy_back);
-        svg.configure({
-            viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh
-        });        
-    }else{
-        back_drag=0;
-    }
-    if(start_drag==1){
-        if(!bDragging){            
-            bDragging=1;
-        //$(selectedItem).attr("transform", "rotate("+arrow[ROTATE_HEADER]+")");
-        }
-        dx = (e.clientX-GetInitCoordx)*ratioZoom - (-transx);
-        dy = (e.clientY-GetInitCoordy)*ratioZoom- (-transy);
-        $(selectedItem).attr("transform", "translate("+dx+","+dy+") rotate("+rotate_deg+")");
-    }else{
-                    
-        bDragging=0;
-    }
-}
-function tmouseMove(e){
-    var touch = e.touches[0];
-    mouseX = touch.pageX;
-    mouseY = touch.pageY;
-    longClickStarted=0;
-    clearTimeout(pressTimer);
-    /*
-    var coords = myMapApp.calcCoordTouch(e);
-    var vx = coords.x.toFixed(1);
-    var vy = coords.y.toFixed(1);
-    document.getElementById("verb4").value="x="+vx;
-    document.getElementById("verb5").value="y="+vy;
-    */
-    //virtual rect
-    /* 
-     var svg = $('#svgbasics').svg('get');
-    var vr = svg.getElementById("gVirtRect"); 
-    dx = (mouseX-GetInitCoordxVirtRect)/ratioZoom;
-    dy = (mouseY-GetInitCoordyVirtRect)/ratioZoom;
-    $(virtRect).attr("transform", "translate("+dx+","+dy+")");
-    */
-    if(back_drag==1){
-        document.getElementById("verb5").value="back_dragging";
-        dx_back = (mouseX-x_ori_back);//ratioZoom;
-        dy_back = (mouseY-y_ori_back);//ratioZoom;  
-        document.getElementById("verb3").value="y="+dx_back;
         var svg = $('#svgbasics').svg('get');
         zoomx =  parseInt(dx_back);
         zoomy =  parseInt(dy_back);
@@ -205,13 +163,45 @@ function tmouseMove(e){
     }
     
     if(start_drag==1){
-        document.getElementById("verb5").value="dragging";
-        bDragging=1;
-        dx = (mouseX-GetInitCoordx)/ratioZoom - (-transx);
-        dy = (mouseY-GetInitCoordy)/ratioZoom - (-transy);
-        document.getElementById("verb1").value="dx="+dx+" mouseX="+transx;
-        document.getElementById("verb2").value="dy="+dy;
-        $(selectedItem).attr("transform", "translate("+dx+","+dy+")");
+        if(!bDragging){            
+            bDragging=1;
+        }
+        dx = (e.clientX-GetInitCoordx)*ratioZoom - (-transx);
+        dy = (e.clientY-GetInitCoordy)*ratioZoom - (-transy);
+        $(selectedItem).attr("transform", "translate("+dx+","+dy+") rotate("+rotate_deg+")");
+    }else{
+                    
+        bDragging=0;
+    }
+}
+
+function tmouseMove(e){
+    var touch = e.touches[0];
+    mouseX = touch.pageX;
+    mouseY = touch.pageY;
+    longClickStarted=0;
+    clearTimeout(pressTimer);
+    
+    if((back_drag==1)&&(!handlingGesture)){
+        dx_back = (mouseX-x_ori_back)*ratioZoom;
+        dy_back = (mouseY-y_ori_back)*ratioZoom;  
+        var svg = $('#svgbasics').svg('get');
+        zoomx =  parseInt(dx_back);
+        zoomy =  parseInt(dy_back);
+        svg.configure({
+            viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh
+        });        
+    }else{
+        back_drag=0;
+    }
+    
+    if(start_drag==1){
+        if(!bDragging){            
+            bDragging=1;
+        }
+        dx = (mouseX-GetInitCoordx)*ratioZoom - (-transx);
+        dy = (mouseY-GetInitCoordy)*ratioZoom - (-transy);
+        $(selectedItem).attr("transform", "translate("+dx+","+dy+") rotate("+rotate_deg+")");
     }else{          
         bDragging=0;
     }
@@ -220,47 +210,62 @@ function tmouseMove(e){
 function tmouseDown(e){
     var arrow=[];
     var touch = e.changedTouches.item(0);
-    var el = e.target;
+    var el = touch.target;
     var id = el.parentNode.getAttributeNS(null,"id");
     document.getElementById("verb4").value="id="+id;
     mouseX = touch.pageX;
     mouseY = touch.pageY;
-    /*
-    //draw virtual rect
-    virtRect = drawVirtualRect(mouseX-(-xoff),mouseY-(-yoff),160,80);
-    GetInitCoordxVirtRect = mouseX;
-    GetInitCoordyVirtRect = mouseY;
-    */
+    
     if((id!="svgbasics")&&( (id.indexOf("gpal")!=-1)||(id.indexOf("gcai") != -1))){
-        selectedItem = el.parentNode;
-        document.getElementById("verb5").value="selItem="+selectedItem;
         previousSelectedItem = selectedItem;
-        selectedItem= el.parentNode;
-        var item = id;
-        selectedIndex = getRowNumArrec(item,ID_HEADER);
+        selectedItem = el.parentNode;
+        selectedIndex = getRowNumArrec(id,ID_HEADER);
         selectedRow = selectedIndex;
-        selArr = arrec[selectedRow];
-        document.getElementById("verb3").value="row="+selectedRow;
-        $(previousSelectedItem.firstChild).attr('stroke','black'); 
+        var arrow = arrec[selectedRow];
+        if(previousSelectedItem)
+            $(previousSelectedItem.firstChild).attr('stroke','black'); 
         $(selectedItem.firstChild).attr('stroke','red'); 
-            
+        rotate_deg = parseInt(arrow[ROTATE_HEADER]);    
+        
+        //document.getElementById("verb4").value=id;
         if(activeView=="ROOM"){
+            if(selectedItem){
+                var arrow = arrec[selectedIndex];
+                document.getElementById("textePalette").value = arrow[TEXTE_HEADER];
+                document.getElementById("nbrCarton").value=arrow[QUANTITE_HEADER];
+            }
             var btnCarton = document.getElementById("vueCarton");
             btnCarton.disabled=false;
         }
-        arrow = arrec[selectedIndex];
+        
+        if(activeView=="CARTON"){
+            if(selectedItem){
+                var arrow = arrec[selectedIndex];
+                document.getElementById("prefix").value=arrow[ARG1_HEADER];
+                document.getElementById("article").value=arrow[ARG2_HEADER];
+                document.getElementById("nbrCoiffes").value=arrow[QUANTITE_HEADER];
+            }
+            var btnCarton = document.getElementById("vueCarton");
+            btnCarton.disabled=true;
+        }
+        
+        selArr = arrec[selectedRow];
         transx = arrow[TRANSX_HEADER];
         transy = arrow[TRANSY_HEADER];
-        rotate_deg = parseInt(arrow[ROTATE_HEADER]);
         bOver=1;
         back_drag=0;
         start_drag = 1;
         itemFocused=1;
     }else{
         bOver=0;
+        start_drag = 0;
         if(id=="svgbasics"){
             itemFocused=0;
-            $(selectedItem.firstChild).attr('stroke','black'); 
+            var btnCarton = document.getElementById("vueCarton");
+            btnCarton.disabled=true;
+            if(selectedItem)
+                $(selectedItem.firstChild).attr('stroke','black'); 
+            back_drag=1;
         }
     }
         
@@ -270,19 +275,28 @@ function tmouseDown(e){
         start_drag = 1;
         back_drag=0;
     }else{
-        start_drag = 0;
-        if(back_drag==0){
-            back_drag=1;
-            x_ori_back=mouseX-zoomx/ratioZoom;
-            y_ori_back=mouseY-zoomy/ratioZoom;
+        if(id=="svgbasics"){
+            start_drag = 0;
+            if(!handlingGesture){
+            if(back_drag==0)
+                back_drag=1;
+                x_ori_back=mouseX-zoomx/ratioZoom;
+                y_ori_back=mouseY-zoomy/ratioZoom;
+            }
+            if (itemFocused==1){
+                itemFocused=0;
+                $(selectedItem.firstChild).attr('stroke', 'black'); 
+            }
         }
-    }
-    if(longClickStarted==0){
+       
+        if(longClickStarted==0){
             pressTimer = window.setTimeout(setLongClick,600);
             longClickStarted=1;
              posx = mouseX;
              posy = mouseY;
-        }
+        } 
+    }
+    
 }
 
 function mouseDown(e){
@@ -315,7 +329,22 @@ function mouseDown(e){
         }
                     
         if((selectedIndexOver == selectedIndex)&&(itemFocused==1)&&(selectedIndexOver!=-1)){
+            selectedItem=selectedItemOver;
+            document.getElementById("verb5").value="selItem="+selectedItem;
+            selectedIndex=selectedIndexOver;
+            GetInitCoordx = e.clientX;
+            GetInitCoordy = e.clientY;
+            var arrow = arrec[selectedIndex];
+            transx = arrow[TRANSX_HEADER];
+            transy = arrow[TRANSY_HEADER];
+            rotate_deg = parseInt(arrow[ROTATE_HEADER]);
+            selectedRow = selectedIndex;
             start_drag = 1;
+            if(activeView=="ROOM"){
+                var count = getNbrCaisse(selectedIndex);
+                var arrow = arrec[selectedRow];
+                arrow[QUANTITE_HEADER]=count;
+            }
         }
         
         if((selectedItem)&&(itemFocused==0)){
@@ -355,11 +384,10 @@ function mouseDown(e){
             var btnCarton = document.getElementById("vueCarton");
             btnCarton.disabled=false;
         }
-        var item = selectedItem.getAttributeNS(null,"id");
         selArr = arrec[selectedRow];
     }else{
         start_drag = 0;
-        if ((start_drag==0)&&(itemFocused==1)){
+        if (itemFocused==1){
             itemFocused=0;
             $(selectedItem.firstChild).attr('stroke', 'black'); 
         }
@@ -376,6 +404,7 @@ function mouseDown(e){
         }
     }
 }
+
 var pressTimer;
 var longClickStarted = 0;
 function setLongClick(){
@@ -413,10 +442,11 @@ function tmouseUp(e){
     longClickStarted=0;
     back_drag=0;
     clearTimeout(pressTimer);
-    //var svg = $('#svgbasics').svg('get');
-    //svg.getElementById("gVirtRect"); 
-    //svg.remove(virtRect);
-    //var touch = e.changedTouches.item(0);
+    
+    if(back_drag==1){
+        back_drag=0;
+        updateViewCookie();
+    }
                 
     if((start_drag) &&(bDragging)){
         start_drag = 0;
@@ -430,20 +460,21 @@ function tmouseUp(e){
     start_drag = 0;
     bDragging = 0;
     dx=0;
-    dy=0;
-                
+    dy=0;          
 }
 function gestureStart(event) {
     event.preventDefault();
     handlingGesture = true;
+    back_drag=0;
     var node = event.target;
+    
+    x = zoomx;//parseInt(node.getAttributeNS(null, 'x'));
+    y = zoomy;//parseInt(node.getAttributeNS(null, 'y'));
 			
-    x = parseInt(node.getAttributeNS(null, 'x'));
-    y = parseInt(node.getAttributeNS(null, 'y'));
-			
-    width = parseInt(node.getAttributeNS(null, 'width'));
-    height = parseInt(node.getAttributeNS(null, 'height'));
-						
+    width = zoomw;//parseInt(node.getAttributeNS(null, 'width'));
+    height = zoomh ; // parseInt(node.getAttributeNS(null, 'height'));
+
+    //alert(x + "," + y + "," + width + "," + height);
     var transform = (node.getAttributeNS(null, 'transform'));
     rotation = parseInt(transform.split('rotate(')[1].split(' ')[0]); // ouch
 	
@@ -455,7 +486,7 @@ function gestureStart(event) {
 function gestureChange(event) {
     event.preventDefault();
     var node = event.target;
-			
+    
     // scale
     /*var newWidth = width * event.scale;
     var newHeight = height * event.scale;
@@ -499,8 +530,9 @@ function gestureChange(event) {
 }
 		
 function gestureEnd(event) {
-    rotation = rotation + event.rotation;
+    //rotation = rotation + event.rotation;
     updateViewCookie();
+    handlingGesture = false;
 }
 		
 function setRotation(node, rotation, x, y) {

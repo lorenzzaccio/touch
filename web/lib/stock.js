@@ -5,6 +5,7 @@ var stock = {
     index: window.localStorage.getItem("stock:index"),
 
     init: function() {
+        arrec_index=0;
         // initialize the storage index
         if (!stock.index) {
             window.localStorage.setItem("stock:index", stock.index = 1);
@@ -61,22 +62,37 @@ var stock = {
                 }
             }
       }
-    /*    
-        var l = stock.getLength();
-        if (l>0) {
-                
-            while(l>0){
-            key = window.localStorage.key(i);
-                if (/stock+/.test(key)) {
-                    window.localStorage.removeItem(key);//(window.localStorage.getItem(key)));
-                    l--;
-                }
-                i++;
-            } */
             if (stock.index) 
                 window.localStorage.setItem("stock:index", stock.index = 1);
-        //}
-            
+
+    },
+    remove : function(entry){
+        j=0;
+        i=0;
+        
+        if (window.localStorage.length - 1) {
+            var stock_list = [], i, key;
+            var l=window.localStorage.length;
+            for (i = 0; i < l; i++) {
+                key = window.localStorage.key(i);
+                if (/stock\d+/.test(key)) {
+                var obj = JSON.parse(window.localStorage.getItem(key));
+                var toto = obj.id;
+                
+        
+                //alert(toto);
+                if(toto==entry){
+                    window.localStorage.removeItem(key);
+                    //obj.order = 200;
+                    //window.localStorage.setItem(key, stock.order = 200);
+                    //window.localStorage.setItem("stock:index", --stock.index);
+                }
+                
+                }
+            }
+      }
+      
+      
     },
     getLength:function(){
       var length=0;

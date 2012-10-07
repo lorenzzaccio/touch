@@ -84,7 +84,7 @@
                 
                 populateCombo("artCombo");
                 activeView="ROOM";
-                setSvgWindow();
+                //setSvgWindow();
                 var mydiv = document.getElementById("svgbasics");
                 screenW = mydiv.offsetWidth;
                 screenH = mydiv.offsetHeight;
@@ -104,11 +104,11 @@
                 locationVal=document.getElementById("locationCombo").value;
             }
             function setSvgWindow(){
-                var screenW = screen.width;
-                var screenH = screen.height;
+                screenW = screen.width;
+                screenH = screen.height;
                 var wnd = document.getElementById("svgbasics");
-                wnd.style.width = (screenW-0)+ 'px';
-                wnd.style.height = (screenH - 100)+ 'px';
+                wnd.style.width = (screenW)+ 'px';
+                wnd.style.height = (screenH )+ 'px';
                 //wnd.style.top=140px;
             }
             function refresh(){
@@ -127,6 +127,7 @@
                 drawcaps();
                 
             }
+            /*
             function initSlider(){
                 $('input[min]').each(function() {
                     this.onchange = updateS;
@@ -144,7 +145,7 @@
                 toto.value=ratioZoom; 
                 svg.configure({viewBox: zoomx+' '+zoomy+' '+zoomw+' '+zoomh})
                 updateViewCookie()
-            }
+            }*/
             
             function left(){
                 var svg = $('#svgbasics').svg('get');
@@ -218,7 +219,7 @@
                 g_main = $('#svgbasics').svg('get').group({id: 'mainGroup'});
                 if(activeView == "CARTON")
                     myGraph.drawPalette30();
-                drawPalyRect();
+                //drawPlayRect(screenW,screenH);
                 var arrow = [];
                 var rowLength = 0;  
                 if(arrec==null)
@@ -338,6 +339,15 @@
                     addCaisseRow(arrow);*/
             
             }
+            function deleteRow(){
+                var arrow = arrec[selectedIndex];
+                stock.remove(arrow[ID_HEADER]);
+                initArray();
+                stock.init();
+                resetData();
+                //drawInitial();
+                setTimeout("drawcaps()", 100);
+            }
             
             function removeLclDb(){
                 stock.storeRemoveAll();
@@ -349,6 +359,7 @@
                 var i=0;
                 arrec=null;
                 arrec = [];
+                
             }
             function updateBtn(){
                 updatePhp("plan_transx",transx,"plan_index",selectedIndex);
@@ -422,10 +433,10 @@
                     arrow[ARG1_HEADER] = document.getElementById("prefix").value;
                     arrow[ARG2_HEADER] = document.getElementById("article").value;
                     arrow[QUANTITE_HEADER] = document.getElementById("nbrCoiffes").value;
-                    
                 }
                 changeArrayRow(selectedRow,arrow);
-                
+                //drawText(group,id,strokeColor,arg1+"-"+arg2,0,x-(-5),y-(-height),rotate);
+                drawcaps();
             }
             function fillVal(){
                 var comb = document.getElementById("artCombo").value;
@@ -446,10 +457,15 @@
             function hideMenuBars(){
                 var wnd1 = document.getElementById("floating_bar");
                 var wnd2 = document.getElementById("floating_bar_bottom");
-                if(wnd1.style.display == "block") 
+                var bod = document.getElementById("svgbasics");
+                if(wnd1.style.display == "block"){ 
                     wnd1.style.display = "none";
-                else
+                    bod.style.marginTop = "0px";
+                }
+                else{
                     wnd1.style.display = "block";
+                    bod.style.marginTop = "70px";
+                }
             
                 if(wnd2.style.display == "block") 
                     wnd2.style.display = "none";
@@ -595,6 +611,7 @@
                 drawcaps();
                     
             }
+            
         </script>
 
     </head>
@@ -920,14 +937,14 @@
         <div id="right_column">
             <div id="floating_menu" style="display: block;">
                 <!--<input TYPE=text class="color {pickerOnfocus:false}" id="colorPalette" onchange="setColor(value)" >-->
-                <INPUT TYPE=button id ="colorBtn" style="width:auto;height:50px" VALUE="couleur" onClick="setColor(value)">
-                <div id="palette" style="display:none;"><IMG SRC="net216.gif"  WIDTH="292" HEIGHT="196"  ALT="" USEMAP="#webpal" ></div>
+                
                 <INPUT TYPE=button id ="zoomplus" style="width:auto;height:50px" VALUE="zoom +" onClick="zoomplus()">
                 <INPUT TYPE=text id ="wheelvalue" style="width:40px;height:40px" VALUE="0" >
                 <INPUT TYPE=button id ="zoommoins" style="width:auto;height:50px" VALUE="zoom -" onClick="zoommoins()">
                 <INPUT TYPE=button id ="vuePalette" style="width:auto;height:50px" VALUE="vue palette" onClick="vuePaletteBtnPressed()" disabled>
                 <INPUT TYPE=button id ="vueCarton" style="width:auto;height:50px" VALUE="vue carton" onClick="vueCartonBtnPressed()" disabled>
-                <INPUT TYPE=button id ="myHeader" style="width:auto;height:50px" VALUE="Menu" onClick="toggleMenu()">
+                <INPUT TYPE=text id ="verb4" style="width:50px;height:30px" VALUE="id" >
+                <!--<INPUT TYPE=button id ="myHeader" style="width:auto;height:50px" VALUE="Menu" onClick="toggleMenu()">-->
 
             </div> 
         </div>
@@ -943,6 +960,9 @@
         <INPUT TYPE=button id ="syncArticle" style="width:100px;height:40px" VALUE="sync Article" onClick="syncS2MArticleBtn()">
         <select id="locationCombo" style="width:100px;height:30px" onchange="changeLocation()"></select> 
         <select id="typeProduitCombo" onchange="changeTypeProduit()"></select>
+        <INPUT TYPE=button id ="delBtn" style="width:100px;height:40px" VALUE="delete" onClick="deleteRow()">
+        <INPUT TYPE=button id ="colorBtn" style="width:100px;height:40px" VALUE="couleur" onClick="setColor(value)">
+        <div id="palette" style="display:none;"><IMG SRC="net216.gif"  WIDTH="292" HEIGHT="196"  ALT="" USEMAP="#webpal" ></div>
         <INPUT TYPE=button id ="closeBarsBtn" style="width:100px;height:40px" VALUE="closeBars" onClick="hideMenuBars()">
         <INPUT TYPE=button id ="closeBtn" style="width:100px;height:40px" VALUE="close" onClick="closeMenu()">
     </div>
