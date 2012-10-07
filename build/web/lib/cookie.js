@@ -369,6 +369,14 @@ function updateViewCookie(){
 function readViewCookie(){
     var tabView = [];
     var tmp = getCookie("viewbox");
+    if (tmp==0){
+        zoomx=0;
+        zoomy=0;
+        zoomw=screenW;
+        zoomh=screenH;
+        ratioZoom=1;
+        return
+    }
     tabView = tmp.split(",");
     if(!isNumber(tabView[0]) || !isNumber(tabView[1]) || !isNumber(tabView[2])|| !isNumber(tabView[3])|| !isNumber(tabView[4])){
         zoomx=0;
